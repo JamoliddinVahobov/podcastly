@@ -1,9 +1,16 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'package:authentication_screens_example/firebase_options.dart';
 import 'package:authentication_screens_example/login_page.dart';
+import 'package:authentication_screens_example/main_screen.dart';
 import 'package:authentication_screens_example/signup_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -19,6 +26,7 @@ class MyApp extends StatelessWidget {
         'login': (context) => LoginPage(),
         'signup': (context) => SignupPage(),
         'auth': (context) => AuthScreens(),
+        'main': (context) => MainScreen(),
       },
     );
   }
@@ -50,7 +58,7 @@ class AuthScreens extends StatelessWidget {
                   fontSize: 17,
                   color: Colors.orange[800]),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
                 Navigator.pushNamed(context, 'login');
@@ -71,7 +79,7 @@ class AuthScreens extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   'Login',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
@@ -80,7 +88,7 @@ class AuthScreens extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             GestureDetector(
               onTap: () {
                 Navigator.pushNamed(context, 'signup');
@@ -101,7 +109,7 @@ class AuthScreens extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   'Sign up',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,

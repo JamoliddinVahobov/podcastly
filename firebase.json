@@ -1,0 +1,25 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "authentication-screens",
+          "appId": "1:20377476126:android:fcf0ed79156ec683c0620f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "authentication-screens",
+          "configurations": {
+            "android": "1:20377476126:android:fcf0ed79156ec683c0620f",
+            "ios": "1:20377476126:ios:d0ca92bfa6065659c0620f",
+            "macos": "1:20377476126:ios:d0ca92bfa6065659c0620f",
+            "web": "1:20377476126:web:672b2c2f8f04324ec0620f",
+            "windows": "1:20377476126:web:ce03a76daaa811bcc0620f"
+          }
+        }
+      }
+    }
+  }
+}
