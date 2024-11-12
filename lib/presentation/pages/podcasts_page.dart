@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:podcast_app/logic/bloc/auth_bloc.dart';
 import 'package:podcast_app/logic/bloc/auth_event.dart';
 import 'package:podcast_app/logic/bloc/auth_state.dart';
-import 'package:podcast_app/presentation/auth%20pages/initial_page.dart';
+import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
 import '../../services/spotify_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -136,7 +136,7 @@ class PodcastsPageState extends State<PodcastsPage> {
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const AuthPages()),
+            MaterialPageRoute(builder: (context) => const WelcomePage()),
           );
         }
       },

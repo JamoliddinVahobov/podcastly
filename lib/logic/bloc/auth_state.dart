@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthState {}
@@ -10,10 +11,17 @@ class AuthAuthenticated extends AuthState {
   AuthAuthenticated(this.user);
 }
 
+class EmailResent extends AuthState {
+  final String message;
+  EmailResent({
+    required this.message,
+  });
+}
+
 class AuthUnauthenticated extends AuthState {}
 
 class AuthLoading extends AuthState {
-  final String message; // Custom message to provide context
+  final String message;
 
   AuthLoading({this.message = "Please wait..."});
 }
@@ -21,7 +29,15 @@ class AuthLoading extends AuthState {
 class AuthError extends AuthState {
   final String? emailError;
   final String? passwordError;
-  final String? message; // Add this line
+  final String? usernameError;
+  final String message;
+  final String source;
 
-  AuthError({this.emailError, this.passwordError, this.message});
+  AuthError({
+    this.usernameError,
+    this.emailError,
+    this.passwordError,
+    required this.message,
+    this.source = '',
+  });
 }

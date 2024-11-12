@@ -13,25 +13,43 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   final FocusNode passwordFocusNode = FocusNode();
 
   bool obscurePassword = true;
+  bool isLoading = false;
+
+  String? emailError;
+  String? passwordError;
+  String? usernameError;
 
   @override
   void initState() {
     super.initState();
     passwordFocusNode.addListener(() {
-      setState(() {}); // Update UI when focus changes
+      setState(() {});
     });
   }
 
   @override
   void dispose() {
     passwordFocusNode.dispose();
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
     super.dispose();
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(fontSize: 16)),
+        backgroundColor: Colors.grey[800],
+      ),
+    );
   }
 
   @override
@@ -43,14 +61,15 @@ class _SignupPageState extends State<SignupPage> {
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is AuthAuthenticated) {
-                _showVerificationDialog(context);
-              } else if (state is AuthError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message ??
-                        'Something went wrong, please try again.'),
-                  ),
-                );
+                Navigator.pushNamed(context, '/verification');
+              } else if (state is AuthError && state.source == 'signup_error') {
+                emailError = state.emailError;
+                passwordError = state.passwordError;
+                usernameError = state.usernameError;
+                if (state.message ==
+                    'Something went wrong, please try again.') {
+                  _showSnackbar('Something went wrong, please try again.');
+                }
               }
             },
             builder: (context, state) {
@@ -59,17 +78,38 @@ class _SignupPageState extends State<SignupPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      height: MediaQuery.sizeOf(context).height * 0.06,
+                    ),
+                    _buildTextField(
+                      controller: usernameController,
+                      label: 'Username',
+                      hint: 'Enter your username',
+                      errorText: usernameError,
+                      onChanged: (_) {
+                        setState(() {
+                          usernameError = null;
+                        });
+                      },
+                    ),
                     _buildTextField(
                       controller: emailController,
                       label: 'Email',
-                      hint: 'Enter your email here',
+                      hint: 'Enter your email',
                       keyboardType: TextInputType.emailAddress,
-                      errorText: _getEmailError(context),
+                      errorText: emailError,
+                      validatorType: 'email',
+                      onChanged: (_) {
+                        setState(() {
+                          emailError = null;
+                        });
+                      },
                     ),
                     _buildTextField(
                       controller: passwordController,
                       label: 'Password',
-                      hint: 'Enter your password here',
+                      hint: 'Enter your password',
+                      validatorType: 'password',
                       obscureText: obscurePassword,
                       focusNode: passwordFocusNode,
                       suffixIcon: passwordFocusNode.hasFocus
@@ -84,45 +124,56 @@ class _SignupPageState extends State<SignupPage> {
                               },
                             )
                           : null,
-                      errorText: _getPasswordError(context),
+                      errorText: passwordError,
+                      onChanged: (_) {
+                        setState(() {
+                          passwordError = null;
+                        });
+                      },
                     ),
                     SizedBox(height: 20),
-                    _buildButton(
-                      context: context,
-                      label: 'Sign Up',
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          final String email = emailController.text.trim();
-                          final String password =
-                              passwordController.text.trim();
-                          context
-                              .read<AuthBloc>()
-                              .add(AuthSignupRequested(email, password));
-                        }
-                      },
-                      colors: [Colors.green.shade700, Colors.green.shade600],
-                    ),
-                    SizedBox(height: 20),
-                    _buildButton(
-                      context: context,
-                      label: 'Go to Login page',
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'login');
-                      },
-                      colors: [Colors.blue.shade700, Colors.blue.shade600],
-                      widthFactor: 0.5,
-                      height: 40,
-                      fontSize: 15,
-                    ),
-                    SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'auth');
-                      },
-                      child: Text(
-                        'Go to the initial page',
-                        style: TextStyle(fontSize: 15),
+                    if (state is AuthLoading)
+                      Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.green),
+                        ),
+                      )
+                    else
+                      _buildButton(
+                        context: context,
+                        label: 'Sign up',
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            final String email = emailController.text.trim();
+                            final String password =
+                                passwordController.text.trim();
+                            final username = usernameController.text.trim();
+                            context.read<AuthBloc>().add(
+                                AuthSignupRequested(email, password, username));
+                          }
+                        },
+                        colors: [Colors.green.shade700, Colors.green.shade600],
                       ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Already have an account?",
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w700),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/login');
+                          },
+                          child: Text(
+                            'Log in',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -131,53 +182,6 @@ class _SignupPageState extends State<SignupPage> {
           ),
         ),
       ),
-    );
-  }
-
-  String? _getEmailError(BuildContext context) {
-    final state = context.watch<AuthBloc>().state;
-    if (state is AuthError) {
-      return state.emailError; // Show email error if exists
-    }
-    return null; // No error
-  }
-
-  String? _getPasswordError(BuildContext context) {
-    final state = context.watch<AuthBloc>().state;
-    if (state is AuthError) {
-      return state.passwordError; // Show password error if exists
-    }
-    return null; // No error
-  }
-
-  Future<void> _showVerificationDialog(BuildContext context) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Verification Email Sent'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                    'A verification email has been sent to your email address.'),
-                Text('Please check your inbox and follow the instructions.'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, 'login', (route) => false);
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -190,6 +194,8 @@ class _SignupPageState extends State<SignupPage> {
     FocusNode? focusNode,
     Widget? suffixIcon,
     String? errorText,
+    String? validatorType,
+    required void Function(String) onChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -223,12 +229,20 @@ class _SignupPageState extends State<SignupPage> {
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: Colors.redAccent, width: 2.5),
+                borderSide: BorderSide(color: Colors.red, width: 2.5),
               ),
             ),
+            onChanged: onChanged,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'This field cannot be empty';
+              }
+              if (validatorType == 'password' && value.length < 6) {
+                return 'Password must be at least 6 characters.';
+              }
+              if (validatorType == 'email' &&
+                  !RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$').hasMatch(value)) {
+                return 'Please enter a valid email';
               }
               return null;
             },
@@ -273,284 +287,3 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 }
-
-
-// // ignore_for_file: prefer_const_constructors
-// import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-
-// class SignupPage extends StatefulWidget {
-//   const SignupPage({super.key});
-
-//   @override
-//   State<SignupPage> createState() => _SignupPageState();
-// }
-
-// class _SignupPageState extends State<SignupPage> {
-//   final FirebaseAuth _auth = FirebaseAuth.instance;
-//   final TextEditingController _emailController = TextEditingController();
-//   final TextEditingController _passwordController = TextEditingController();
-//   final FocusNode _passwordFocusNode = FocusNode();
-
-//   bool _isPasswordVisible = true;
-//   bool _isPasswordFocused = false;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _passwordFocusNode.addListener(_onFocusChange);
-//   }
-
-//   @override
-//   void dispose() {
-//     _emailController.dispose();
-//     _passwordController.dispose();
-//     _passwordFocusNode.removeListener(_onFocusChange);
-//     _passwordFocusNode.dispose();
-//     super.dispose();
-//   }
-
-//   void _onFocusChange() {
-//     setState(() {
-//       _isPasswordFocused = _passwordFocusNode.hasFocus;
-//     });
-//   }
-
-//   void _showSnackbar(String message) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         content: Text(message, style: TextStyle(fontSize: 16)),
-//         backgroundColor: Colors.grey[800],
-//       ),
-//     );
-//   }
-
-//   Future<void> _signUp() async {
-//     final String email = _emailController.text.trim();
-//     final String password = _passwordController.text.trim();
-
-//     if (email.isEmpty || password.isEmpty) {
-//       if (mounted) {
-//         _showSnackbar('Please fill in all fields');
-//       }
-//       return;
-//     }
-//     try {
-//       UserCredential userCredential =
-//           await _auth.createUserWithEmailAndPassword(
-//         email: email,
-//         password: password,
-//       );
-//       final User? user = userCredential.user;
-//       if (user != null) {
-//         await user.sendEmailVerification();
-//         if (mounted) {
-//           _showSnackbar('Verification Email Sent. Please check your email.');
-//           if (mounted) {
-//             Navigator.pushNamedAndRemoveUntil(
-//               context,
-//               'login',
-//               (Route<dynamic> route) => false,
-//             );
-//           }
-//         }
-//       }
-//     } on FirebaseAuthException catch (e) {
-//       String errorMessage;
-//       switch (e.code) {
-//         case 'weak-password':
-//           errorMessage = 'The password provided is too weak.';
-//           break;
-//         case 'email-already-in-use':
-//           errorMessage = 'An account already exists with this email.';
-//           break;
-//         case 'invalid-email':
-//           errorMessage = 'This email address is not valid.';
-//           break;
-//         default:
-//           errorMessage = 'An error occurred. Please try again.';
-//           break;
-//       }
-//       if (mounted) {
-//         _showSnackbar(errorMessage);
-//       }
-//     } catch (e) {
-//       if (mounted) {
-//         _showSnackbar('An unexpected error occurred. Please try again.');
-//       }
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: SingleChildScrollView(
-//           padding: const EdgeInsets.symmetric(horizontal: 30),
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               _buildTextField(
-//                 controller: _emailController,
-//                 label: 'Email',
-//                 hint: 'Enter your email here',
-//                 keyboardType: TextInputType.emailAddress,
-//               ),
-//               _buildTextField(
-//                 controller: _passwordController,
-//                 label: 'Password',
-//                 hint: 'Enter your password here',
-//                 obscureText: _isPasswordVisible,
-//                 focusNode: _passwordFocusNode,
-//                 suffixIcon: _isPasswordFocused
-//                     ? IconButton(
-//                         onPressed: () {
-//                           setState(() {
-//                             _isPasswordVisible = !_isPasswordVisible;
-//                           });
-//                         },
-//                         icon: Icon(
-//                           _isPasswordVisible
-//                               ? Icons.visibility
-//                               : Icons.visibility_off,
-//                         ),
-//                       )
-//                     : null,
-//               ),
-//               SizedBox(height: 20),
-//               _buildButton(
-//                 label: 'Sign up',
-//                 onPressed: _signUp,
-//                 colors: [
-//                   Colors.green.shade700,
-//                   Colors.green.shade600,
-//                   Colors.green.shade400
-//                 ],
-//               ),
-//               SizedBox(height: 20),
-//               _buildButton(
-//                 label: 'Go to Login page',
-//                 onPressed: () {
-//                   Navigator.pushNamed(context, 'login');
-//                 },
-//                 colors: [Colors.blue.shade700, Colors.blue.shade600],
-//                 widthFactor: 0.5,
-//                 height: 40,
-//                 fontSize: 15,
-//               ),
-//               SizedBox(height: 10),
-//               TextButton(
-//                 onPressed: () {
-//                   Navigator.pushNamed(context, 'auth');
-//                 },
-//                 child: Text(
-//                   'Go to the initial page',
-//                   style: TextStyle(fontSize: 15),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-  // Widget _buildTextField({
-  //   required TextEditingController controller,
-  //   required String label,
-  //   required String hint,
-  //   TextInputType keyboardType = TextInputType.text,
-  //   bool obscureText = false,
-  //   FocusNode? focusNode,
-  //   Widget? suffixIcon,
-  // }) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 10),
-  //     child: TextField(
-  //       controller: controller,
-  //       keyboardType: keyboardType,
-  //       obscureText: obscureText,
-  //       focusNode: focusNode,
-  //       style: TextStyle(
-  //         fontSize: 16,
-  //         color: Colors.black,
-  //       ),
-  //       decoration: InputDecoration(
-  //         labelText: label,
-  //         labelStyle: TextStyle(
-  //           fontWeight: FontWeight.w500,
-  //         ),
-  //         hintText: hint,
-  //         hintStyle: TextStyle(
-  //           color: Colors.grey[600],
-  //         ),
-  //         contentPadding:
-  //             const EdgeInsets.symmetric(vertical: 17, horizontal: 15),
-  //         enabledBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(15),
-  //           borderSide: BorderSide(
-  //             color: Colors.grey[500]!,
-  //             width: 2.0,
-  //           ),
-  //         ),
-  //         focusedBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(15),
-  //           borderSide: BorderSide(
-  //             color: Colors.blueAccent,
-  //             width: 2.5,
-  //           ),
-  //         ),
-  //         errorBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(15),
-  //           borderSide: BorderSide(
-  //             color: Colors.red,
-  //             width: 2.0,
-  //           ),
-  //         ),
-  //         focusedErrorBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(15),
-  //           borderSide: BorderSide(
-  //             color: Colors.redAccent,
-  //             width: 2.5,
-  //           ),
-  //         ),
-  //         suffixIcon: suffixIcon,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildButton({
-  //   required String label,
-  //   required VoidCallback onPressed,
-  //   required List<Color> colors,
-  //   double widthFactor = 0.55,
-  //   double height = 50,
-  //   double fontSize = 20,
-  // }) {
-  //   return GestureDetector(
-  //     onTap: onPressed,
-  //     child: Container(
-  //       alignment: Alignment.center,
-  //       height: height,
-  //       width: MediaQuery.of(context).size.width * widthFactor,
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(30),
-  //         gradient: LinearGradient(
-  //           colors: colors,
-  //           begin: Alignment.centerLeft,
-  //           end: Alignment.centerRight,
-  //         ),
-  //       ),
-  //       child: Text(
-  //         label,
-  //         style: TextStyle(
-  //           fontWeight: FontWeight.w500,
-  //           fontSize: fontSize,
-  //           color: Colors.white,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-// }

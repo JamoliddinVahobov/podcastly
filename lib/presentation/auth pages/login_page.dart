@@ -44,10 +44,10 @@ class _LoginPageState extends State<LoginPage> {
             listener: (context, state) {
               if (state is AuthAuthenticated) {
                 Navigator.pushNamedAndRemoveUntil(
-                    context, 'podcasts', (route) => false);
-              } else if (state is AuthError) {
+                    context, '/podcasts', (route) => false);
+              } else if (state is AuthError && state.source == 'login_error') {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message ?? 'Login failed.')),
+                  SnackBar(content: Text(state.message)),
                 );
               }
             },
@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 20),
                     _buildButton(
                       context: context,
-                      label: 'Login',
+                      label: 'Log in',
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           final String email = emailController.text.trim();
@@ -102,26 +102,24 @@ class _LoginPageState extends State<LoginPage> {
                       colors: [Colors.blue.shade700, Colors.blue.shade600],
                     ),
                     SizedBox(height: 20),
-                    _buildButton(
-                      context: context,
-                      label: 'Go to Signup page',
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'signup');
-                      },
-                      colors: [Colors.green.shade700, Colors.green.shade600],
-                      widthFactor: 0.5,
-                      height: 40,
-                      fontSize: 15,
-                    ),
-                    SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'auth');
-                      },
-                      child: Text(
-                        'Go to the initial page',
-                        style: TextStyle(fontSize: 15),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account?",
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w700),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/signup');
+                          },
+                          child: Text(
+                            'Sign up',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -151,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String? _getEmailError(BuildContext context) {
     final state = context.watch<AuthBloc>().state;
-    if (state is AuthError) {
+    if (state is AuthError && state.source == 'login_error') {
       return state.emailError; // Show email error if exists
     }
     return null; // No error
@@ -159,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String? _getPasswordError(BuildContext context) {
     final state = context.watch<AuthBloc>().state;
-    if (state is AuthError) {
+    if (state is AuthError && state.source == 'login_error') {
       return state.passwordError; // Show password error if exists
     }
     return null; // No error
@@ -525,7 +523,7 @@ class _LoginPageState extends State<LoginPage> {
 //               _buildButton(
 //                 label: 'Go to Sign Up page',
 //                 onPressed: () {
-//                   Navigator.pushNamed(context, 'signup');
+//                   Navigator.pushNamed(context, '/signup');
 //                 },
 //                 colors: [Colors.green.shade700, Colors.green.shade600],
 //                 widthFactor: 0.5,
