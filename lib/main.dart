@@ -6,7 +6,7 @@ import 'package:podcast_app/firebase_options.dart';
 import 'package:podcast_app/logic/bloc/auth_bloc.dart';
 import 'package:podcast_app/logic/bloc/auth_state.dart';
 import 'package:podcast_app/presentation/app_router/app_router.dart';
-import 'package:podcast_app/presentation/auth%20pages/initial_page.dart';
+import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
 import 'package:podcast_app/presentation/pages/podcasts_page.dart';
 
 Future<void> main() async {
@@ -25,16 +25,16 @@ class MyApp extends StatelessWidget {
       create: (context) => AuthBloc(FirebaseAuth.instance),
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Podcast app',
-        home: InitialPage(),
+        title: 'Podcastly',
+        home: AuthCheck(),
         onGenerateRoute: AppRouter.generateRoute,
       ),
     );
   }
 }
 
-class InitialPage extends StatelessWidget {
-  const InitialPage({super.key});
+class AuthCheck extends StatelessWidget {
+  const AuthCheck({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class InitialPage extends StatelessWidget {
         if (state is AuthAuthenticated) {
           return const PodcastsPage();
         } else {
-          return const AuthPages();
+          return const WelcomePage();
         }
       },
     );

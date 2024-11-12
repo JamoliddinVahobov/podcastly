@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AuthPages extends StatelessWidget {
-  const AuthPages({super.key});
+class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +20,17 @@ class AuthPages extends StatelessWidget {
               ),
             ),
             Text(
-              'Welcome to our awesome app\nYou can Log in or Sign up here',
+              'Welcome to Podcastly\nYou can Log in or Sign up here',
               style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 17,
                   color: Colors.orange[800]),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, 'login');
+                Navigator.pushNamed(context, '/login');
               },
               child: Container(
                 alignment: Alignment.center,
@@ -48,7 +49,7 @@ class AuthPages extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Login',
+                  'Log In',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 20,
@@ -59,7 +60,7 @@ class AuthPages extends StatelessWidget {
             const SizedBox(height: 20),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, 'signup');
+                Navigator.pushNamed(context, '/signup');
               },
               child: Container(
                 alignment: Alignment.center,
@@ -78,7 +79,7 @@ class AuthPages extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Sign up',
+                  'Sign Up',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 20,
