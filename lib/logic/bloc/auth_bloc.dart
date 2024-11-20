@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'auth_event.dart';
@@ -5,28 +6,38 @@ import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth;
-
+  final timeoutDuration = const Duration(seconds: 20);
   AuthBloc(this._auth) : super(AuthInitial()) {
     // Handling signup
     on<AuthSignupRequested>((event, emit) async {
       emit(AuthLoading(message: "Signing up..."));
       try {
-        UserCredential userCredential =
-            await _auth.createUserWithEmailAndPassword(
+        // Use Future.timeout to wrap the signup operation
+        UserCredential userCredential = await _auth
+            .createUserWithEmailAndPassword(
           email: event.email,
           password: event.password,
-        );
+        )
+            .timeout(timeoutDuration, onTimeout: () {
+          throw TimeoutException('Signup request timed out');
+        });
+
         final User? user = userCredential.user;
         if (user != null) {
           await user.updateDisplayName(event.username);
           await user.sendEmailVerification();
-          emit(AuthAuthenticated(user));
+          emit(AuthEmailVerificationRequired(user));
         } else {
           emit(AuthError(
             message: 'Something went wrong, please try again.',
             source: 'signup_error',
           ));
         }
+      } on TimeoutException catch (_) {
+        emit(AuthError(
+          message: 'The signup request took too long. Please try again.',
+          source: 'signup_timeout',
+        ));
       } on FirebaseAuthException catch (e) {
         String? emailError;
         String? passwordError;
@@ -127,9 +138,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await event.user.sendEmailVerification();
         emit(EmailResent(message: "Verification email has been resent."));
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'too-many-requests') {
+          emit(AuthError(
+            message: 'You have made too many requests. Please try again later.',
+            source: 'resend_verification_error',
+          ));
+        } else {
+          emit(AuthError(
+            message: 'Failed to resend verification email. Please try again.',
+            source: 'resend_verification_error',
+          ));
+        }
       } catch (e) {
         emit(AuthError(
-          message: 'Failed to resend verification email. Please try again.',
+          message: 'An unexpected error occurred. Please try again later.',
           source: 'resend_verification_error',
         ));
       }

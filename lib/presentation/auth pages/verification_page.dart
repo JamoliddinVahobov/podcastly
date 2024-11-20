@@ -1,9 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/logic/bloc/auth_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:podcast_app/logic/bloc/auth_event.dart';
-import 'package:podcast_app/logic/bloc/auth_state.dart';
+import '../../logic/bloc/auth_bloc.dart';
+import '../../logic/bloc/auth_state.dart';
 
 class VerificationPage extends StatelessWidget {
   const VerificationPage({super.key});
@@ -23,8 +23,14 @@ class VerificationPage extends StatelessWidget {
               style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             ),
+            const SizedBox(height: 20),
+            Text(
+              'Sent to: ${user?.email ?? ""}',
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 10),
-            BlocListener<AuthBloc, AuthState>(
+            BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is EmailResent) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -37,24 +43,34 @@ class VerificationPage extends StatelessWidget {
                   );
                 }
               },
-              child: TextButton(
-                onPressed: () {
-                  if (user != null) {
-                    context
-                        .read<AuthBloc>()
-                        .add(AuthResendVerificationEmail(user: user));
-                  }
-                },
-                child: const Text(
-                  'Resend Verification Email',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
+              builder: (context, state) {
+                if (state is AuthLoading) {
+                  return const CircularProgressIndicator();
+                }
+                return TextButton(
+                  onPressed: () {
+                    if (user != null) {
+                      context.read<AuthBloc>().add(
+                            AuthResendVerificationEmail(user: user),
+                          );
+                    }
+                  },
+                  child: const Text(
+                    'Resend Verification Email',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, '/login');
+                FirebaseAuth.instance.signOut();
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/login', // Navigate to login page
+                  (route) => false,
+                );
               },
               child: Container(
                 alignment: Alignment.center,

@@ -9,6 +9,16 @@ class AuthAuthenticated extends AuthState {
   final User user;
 
   AuthAuthenticated(this.user);
+
+  List<Object> get props => [user];
+}
+
+class AuthEmailVerificationRequired extends AuthState {
+  final User user;
+
+  AuthEmailVerificationRequired(this.user);
+
+  List<Object> get props => [user];
 }
 
 class EmailResent extends AuthState {
