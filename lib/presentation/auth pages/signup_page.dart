@@ -46,7 +46,7 @@ class _SignupPageState extends State<SignupPage> {
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: TextStyle(fontSize: 16)),
+        content: Text(message, style: TextStyle(fontSize: 14)),
         backgroundColor: Colors.grey[800],
       ),
     );
@@ -60,15 +60,23 @@ class _SignupPageState extends State<SignupPage> {
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
-              if (state is AuthAuthenticated) {
+              if (state is AuthEmailVerificationRequired) {
                 Navigator.pushNamed(context, '/verification');
-              } else if (state is AuthError && state.source == 'signup_error') {
-                emailError = state.emailError;
-                passwordError = state.passwordError;
-                usernameError = state.usernameError;
-                if (state.message ==
-                    'Something went wrong, please try again.') {
-                  _showSnackbar('Something went wrong, please try again.');
+              } else if (state is AuthError) {
+                // Check for a general signup error
+                if (state.source == 'signup_error') {
+                  emailError = state.emailError;
+                  passwordError = state.passwordError;
+                  usernameError = state.usernameError;
+                  if (state.message ==
+                      'Something went wrong, please try again.') {
+                    _showSnackbar('Something went wrong, please try again.');
+                  }
+                }
+                if (state.source == 'signup_timeout') {
+                  // Display a timeout-specific message to the user
+                  _showSnackbar(
+                      'The signup request took too long. Please try again.');
                 }
               }
             },
