@@ -246,7 +246,7 @@ class _SignupPageState extends State<SignupPage> {
                 return 'This field cannot be empty';
               }
               if (validatorType == 'password' && value.length < 6) {
-                return 'Password must be at least 6 characters.';
+                return 'Password must be at least 6 characters';
               }
               if (validatorType == 'email' &&
                   !RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$').hasMatch(value)) {
