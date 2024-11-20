@@ -57,6 +57,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             emailError = 'This email address is not valid.';
             message = emailError;
             break;
+          case 'too-many-requests':
+            message = 'Too many requests. Please try again later.';
           case 'invalid-display-name':
             usernameError = 'The username is invalid.';
             message = usernameError;
@@ -84,6 +86,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLoginRequested>((event, emit) async {
       emit(AuthLoading(message: "Logging in..."));
       try {
+        // Validate fields before making request
+        if (event.email.isEmpty || event.password.isEmpty) {
+          emit(AuthError(
+            message: 'Email and password cannot be empty.',
+            source: 'login_error',
+          ));
+          return;
+        }
+
+        // Perform login
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: event.email,
           password: event.password,
@@ -115,6 +127,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             emailError = 'This email address is not valid.';
             message = emailError;
             break;
+          case 'too-many-requests':
+            message = 'Too many requests. Please try again later.';
+            break;
+          case 'network-request-failed':
+            message = 'Network error, please check your connection.';
+            break;
           default:
             message = 'Something went wrong, please try again.';
             break;
@@ -124,6 +142,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           passwordError: passwordError,
           message: message,
           source: 'login_error',
+        ));
+      } on TimeoutException catch (_) {
+        emit(AuthError(
+          message: 'The login request took too long. Please try again.',
+          source: 'login_timeout',
         ));
       } catch (e) {
         emit(AuthError(

@@ -34,6 +34,18 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(fontSize: 14)),
+        backgroundColor: Colors.grey[800],
+      ),
+    );
+  }
+
+  String? emailError;
+  String? passwordError;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,10 +57,23 @@ class _LoginPageState extends State<LoginPage> {
               if (state is AuthAuthenticated) {
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/podcasts', (route) => false);
-              } else if (state is AuthError && state.source == 'login_error') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message)),
-                );
+              } else if (state is AuthError) {
+                // Check for a general login error
+                if (state.source == 'login_error') {
+                  emailError = state.emailError;
+                  passwordError = state.passwordError;
+                  // Handle other generic error cases
+                  if (state.message ==
+                      'Something went wrong, please try again.') {
+                    _showSnackbar('Something went wrong, please try again.');
+                  }
+                }
+                // Handle timeout error
+                else if (state.source == 'login_timeout') {
+                  // Display a timeout-specific message to the user
+                  _showSnackbar(
+                      'The login request took too long. Please try again.');
+                }
               }
             },
             builder: (context, state) {
@@ -62,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                       label: 'Email',
                       hint: 'Enter your email here',
                       keyboardType: TextInputType.emailAddress,
-                      errorText: _getEmailError(context),
+                      errorText: emailError,
                       validator: _validateEmail,
                     ),
                     _buildTextField(
@@ -83,24 +108,33 @@ class _LoginPageState extends State<LoginPage> {
                               },
                             )
                           : null,
-                      errorText: _getPasswordError(context),
+                      errorText: passwordError,
+                      validator: _validatePassword,
                     ),
                     SizedBox(height: 20),
-                    _buildButton(
-                      context: context,
-                      label: 'Log in',
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          final String email = emailController.text.trim();
-                          final String password =
-                              passwordController.text.trim();
-                          context
-                              .read<AuthBloc>()
-                              .add(AuthLoginRequested(email, password));
-                        }
-                      },
-                      colors: [Colors.blue.shade700, Colors.blue.shade600],
-                    ),
+                    if (state is AuthLoading)
+                      Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.blue),
+                        ),
+                      )
+                    else
+                      _buildButton(
+                        context: context,
+                        label: 'Log in',
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            final String email = emailController.text.trim();
+                            final String password =
+                                passwordController.text.trim();
+                            context
+                                .read<AuthBloc>()
+                                .add(AuthLoginRequested(email, password));
+                          }
+                        },
+                        colors: [Colors.blue.shade700, Colors.blue.shade600],
+                      ),
                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -151,6 +185,15 @@ class _LoginPageState extends State<LoginPage> {
     final state = context.watch<AuthBloc>().state;
     if (state is AuthError && state.source == 'login_error') {
       return state.emailError; // Show email error if exists
+    }
+    return null; // No error
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password cannot be empty';
+    } else if (value.length < 6) {
+      return 'Password must be at least 6 characters';
     }
     return null; // No error
   }
