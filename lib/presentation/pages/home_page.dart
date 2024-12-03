@@ -7,14 +7,14 @@ import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
 import '../../services/spotify_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PodcastsPage extends StatefulWidget {
-  const PodcastsPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  PodcastsPageState createState() => PodcastsPageState();
+  HomePageState createState() => HomePageState();
 }
 
-class PodcastsPageState extends State<PodcastsPage> {
+class HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> allPodcasts = [];
   bool isLoading = false;
   bool hasMore = true;
@@ -165,10 +165,6 @@ class PodcastsPageState extends State<PodcastsPage> {
               )
             ],
             elevation: 0,
-            title: const Text(
-              'Podcasts',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
           ),
           body: Stack(
             children: [
