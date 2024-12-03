@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../presentation/pages/podcasts_page.dart';
-import '../presentation/pages/search_page.dart';
+import '../pages/home_page.dart';
+import '../pages/search_page.dart';
 
 class TheBottomBar extends StatefulWidget {
   const TheBottomBar({super.key});
@@ -12,7 +12,7 @@ class TheBottomBar extends StatefulWidget {
 class TheBottomBarState extends State<TheBottomBar> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [const PodcastsPage(), const SearchPage()];
+  final List<Widget> _pages = [const HomePage(), const SearchPage()];
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;

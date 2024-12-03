@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
             listener: (context, state) {
               if (state is AuthAuthenticated) {
                 Navigator.pushNamedAndRemoveUntil(
-                    context, '/podcasts', (route) => false);
+                    context, '/bottombar', (route) => false);
               } else if (state is AuthError) {
                 // Check for a general login error
                 if (state.source == 'login_error') {

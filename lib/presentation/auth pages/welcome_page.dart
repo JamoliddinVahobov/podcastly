@@ -49,7 +49,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Log In',
+                  'Log in',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 20,
@@ -79,7 +79,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Sign Up',
+                  'Sign up',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 20,

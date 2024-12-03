@@ -7,7 +7,7 @@ import 'package:podcast_app/logic/bloc/auth_bloc.dart';
 import 'package:podcast_app/logic/bloc/auth_state.dart';
 import 'package:podcast_app/presentation/app_router/app_router.dart';
 import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
-import 'package:podcast_app/presentation/pages/podcasts_page.dart';
+import 'presentation/bottom_navigation_bar/bottom_nav_bar.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +41,7 @@ class AuthCheck extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthAuthenticated) {
-          return const PodcastsPage();
+          return const TheBottomBar();
         } else {
           return const WelcomePage();
         }
