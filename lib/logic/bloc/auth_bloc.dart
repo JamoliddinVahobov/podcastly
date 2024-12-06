@@ -9,8 +9,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final timeoutDuration = const Duration(seconds: 20);
   AuthBloc(this._auth) : super(AuthInitial()) {
     // Handling signup
-    on<AuthSignupRequested>((event, emit) async {
-      emit(AuthLoading(message: "Signing up..."));
+    on<SignupRequested>((event, emit) async {
+      emit(AuthLoading());
       try {
         // Use Future.timeout to wrap the signup operation
         UserCredential userCredential = await _auth
@@ -26,7 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (user != null) {
           await user.updateDisplayName(event.username);
           await user.sendEmailVerification();
-          emit(AuthEmailVerificationRequired(user));
+          emit(EmailVerificationRequired(user));
         } else {
           emit(AuthError(
             message: 'Something went wrong, please try again.',
@@ -83,8 +83,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     // Handling login
-    on<AuthLoginRequested>((event, emit) async {
-      emit(AuthLoading(message: "Logging in..."));
+    on<LoginRequested>((event, emit) async {
+      emit(AuthLoading());
       try {
         // Validate fields before making request
         if (event.email.isEmpty || event.password.isEmpty) {
@@ -102,7 +102,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
         final User? user = userCredential.user;
         if (user != null && user.emailVerified) {
-          emit(AuthAuthenticated(user));
+          emit(AuthenticatedUser(user));
         } else {
           emit(AuthError(
             message: 'User is not verified or does not exist.',
@@ -156,8 +156,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<AuthResendVerificationEmail>((event, emit) async {
-      emit(AuthLoading(message: "Resending verification email..."));
+    on<ResendVerificationEmail>((event, emit) async {
+      emit(AuthLoading());
       try {
         await event.user.sendEmailVerification();
         emit(EmailResent(message: "Verification email has been resent."));
@@ -182,10 +182,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     // Handling logout
-    on<AuthLogoutRequested>((event, emit) async {
+    on<LogoutRequested>((event, emit) async {
       try {
         await _auth.signOut();
-        emit(AuthUnauthenticated());
+        emit(UnauthenticatedUser());
       } catch (e) {
         emit(AuthError(
           message: 'Something went wrong, please try again.',
@@ -195,12 +195,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     // Checking authentication
-    on<AuthCheckRequested>((event, emit) {
+    on<AuthCheckRequested>((event, emit) async {
+      emit(AuthLoading());
       final User? user = _auth.currentUser;
-      if (user != null && user.emailVerified) {
-        emit(AuthAuthenticated(user));
+      if (user != null) {
+        try {
+          await user.getIdToken();
+          emit(AuthenticatedUser(user));
+        } catch (e) {
+          emit(AuthError(
+            message: 'Failed to retrieve authentication token.',
+            source: 'auth_check_error',
+          ));
+        }
       } else {
-        emit(AuthUnauthenticated());
+        emit(UnauthenticatedUser());
       }
     });
   }

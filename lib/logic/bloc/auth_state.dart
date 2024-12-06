@@ -5,18 +5,18 @@ abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
 
-class AuthAuthenticated extends AuthState {
+class AuthenticatedUser extends AuthState {
   final User user;
 
-  AuthAuthenticated(this.user);
+  AuthenticatedUser(this.user);
 
   List<Object> get props => [user];
 }
 
-class AuthEmailVerificationRequired extends AuthState {
+class EmailVerificationRequired extends AuthState {
   final User user;
 
-  AuthEmailVerificationRequired(this.user);
+  EmailVerificationRequired(this.user);
 
   List<Object> get props => [user];
 }
@@ -28,13 +28,9 @@ class EmailResent extends AuthState {
   });
 }
 
-class AuthUnauthenticated extends AuthState {}
+class UnauthenticatedUser extends AuthState {}
 
-class AuthLoading extends AuthState {
-  final String message;
-
-  AuthLoading({this.message = "Please wait..."});
-}
+class AuthLoading extends AuthState {}
 
 class AuthError extends AuthState {
   final String? emailError;

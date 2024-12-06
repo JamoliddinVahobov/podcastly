@@ -5,6 +5,8 @@ import 'package:podcast_app/logic/bloc/auth_bloc.dart';
 import 'package:podcast_app/logic/bloc/auth_event.dart';
 import 'package:podcast_app/logic/bloc/auth_state.dart';
 
+import '../../helpers/helpers.dart';
+
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
@@ -43,15 +45,6 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message, style: TextStyle(fontSize: 14)),
-        backgroundColor: Colors.grey[800],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,23 +53,26 @@ class _SignupPageState extends State<SignupPage> {
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
-              if (state is AuthEmailVerificationRequired) {
+              if (state is EmailVerificationRequired) {
                 Navigator.pushNamed(context, '/verification');
               } else if (state is AuthError) {
-                // Check for a general signup error
                 if (state.source == 'signup_error') {
                   emailError = state.emailError;
                   passwordError = state.passwordError;
                   usernameError = state.usernameError;
                   if (state.message ==
                       'Something went wrong, please try again.') {
-                    _showSnackbar('Something went wrong, please try again.');
+                    Helpers.showSnackbar(
+                      'Something went wrong, please try again.',
+                      context,
+                    );
                   }
                 }
                 if (state.source == 'signup_timeout') {
-                  // Display a timeout-specific message to the user
-                  _showSnackbar(
-                      'The signup request took too long. Please try again.');
+                  Helpers.showSnackbar(
+                    'The signup request took too long. Please try again.',
+                    context,
+                  );
                 }
               }
             },
@@ -158,7 +154,7 @@ class _SignupPageState extends State<SignupPage> {
                                 passwordController.text.trim();
                             final username = usernameController.text.trim();
                             context.read<AuthBloc>().add(
-                                AuthSignupRequested(email, password, username));
+                                SignupRequested(email, password, username));
                           }
                         },
                         colors: [Colors.green.shade700, Colors.green.shade600],

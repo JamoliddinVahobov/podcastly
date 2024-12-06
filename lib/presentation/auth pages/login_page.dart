@@ -5,6 +5,8 @@ import 'package:podcast_app/logic/bloc/auth_bloc.dart';
 import 'package:podcast_app/logic/bloc/auth_event.dart';
 import 'package:podcast_app/logic/bloc/auth_state.dart';
 
+import '../../helpers/helpers.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -34,15 +36,6 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message, style: TextStyle(fontSize: 14)),
-        backgroundColor: Colors.grey[800],
-      ),
-    );
-  }
-
   String? emailError;
   String? passwordError;
 
@@ -54,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
-              if (state is AuthAuthenticated) {
+              if (state is AuthenticatedUser) {
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/bottombar', (route) => false);
               } else if (state is AuthError) {
@@ -65,14 +58,19 @@ class _LoginPageState extends State<LoginPage> {
                   // Handle other generic error cases
                   if (state.message ==
                       'Something went wrong, please try again.') {
-                    _showSnackbar('Something went wrong, please try again.');
+                    Helpers.showSnackbar(
+                      'Something went wrong, please try again.',
+                      context,
+                    );
                   }
                 }
                 // Handle timeout error
                 else if (state.source == 'login_timeout') {
                   // Display a timeout-specific message to the user
-                  _showSnackbar(
-                      'The login request took too long. Please try again.');
+                  Helpers.showSnackbar(
+                    'The login request took too long. Please try again.',
+                    context,
+                  );
                 }
               }
             },
@@ -130,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                                 passwordController.text.trim();
                             context
                                 .read<AuthBloc>()
-                                .add(AuthLoginRequested(email, password));
+                                .add(LoginRequested(email, password));
                           }
                         },
                         colors: [Colors.blue.shade700, Colors.blue.shade600],

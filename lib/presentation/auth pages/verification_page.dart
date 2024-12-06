@@ -51,7 +51,7 @@ class VerificationPage extends StatelessWidget {
                   onPressed: () {
                     if (user != null) {
                       context.read<AuthBloc>().add(
-                            AuthResendVerificationEmail(user: user),
+                            ResendVerificationEmail(user: user),
                           );
                     }
                   },
