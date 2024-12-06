@@ -2,29 +2,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthEvent {}
 
-class AuthLoginRequested extends AuthEvent {
+class LoginRequested extends AuthEvent {
   final String email;
   final String password;
 
-  AuthLoginRequested(this.email, this.password);
+  LoginRequested(this.email, this.password);
 }
 
-class AuthSignupRequested extends AuthEvent {
+class SignupRequested extends AuthEvent {
   final String email;
   final String password;
   final String username;
 
-  AuthSignupRequested(this.email, this.password, this.username);
+  SignupRequested(this.email, this.password, this.username);
 }
 
-class AuthLogoutRequested extends AuthEvent {}
+class LogoutRequested extends AuthEvent {}
 
 class AuthCheckRequested extends AuthEvent {}
 
-class AuthResendVerificationEmail extends AuthEvent {
+class ResendVerificationEmail extends AuthEvent {
   final User user;
 
-  AuthResendVerificationEmail({required this.user});
+  ResendVerificationEmail({required this.user});
 }
 
 // For password reset
