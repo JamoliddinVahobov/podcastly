@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:podcast_app/logic/bloc/auth_event.dart';
-import '../../logic/bloc/auth_bloc.dart';
-import '../../logic/bloc/auth_state.dart';
+import 'package:podcast_app/logic/auth_bloc/auth_event.dart';
+import '../../logic/auth_bloc/auth_bloc.dart';
+import '../../logic/auth_bloc/auth_state.dart';
 
 class VerificationPage extends StatelessWidget {
   const VerificationPage({super.key});
