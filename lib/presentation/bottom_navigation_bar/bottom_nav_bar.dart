@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../logic/audio_player_bloc/audio_player_bloc.dart';
 import '../pages/home_page.dart';
+import '../pages/mini_player.dart';
 import '../pages/search_page.dart';
 import '../pages/settings_page.dart';
 
@@ -51,7 +54,24 @@ class TheBottomBarState extends State<TheBottomBar>
       color: Colors.white,
       child: SafeArea(
         child: Scaffold(
-          body: _pages[_selectedIndex],
+          body: Stack(
+            children: [
+              _pages[_selectedIndex],
+              BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+                builder: (context, audioState) {
+                  if (audioState.currentEpisode != null) {
+                    return const Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: MiniPlayer(),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
+          ),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,

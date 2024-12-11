@@ -7,7 +7,6 @@ import 'package:podcast_app/helpers/helpers.dart';
 import 'package:podcast_app/logic/audio_player_bloc/audio_player_bloc.dart';
 import 'package:podcast_app/logic/auth_bloc/auth_bloc.dart';
 import 'package:podcast_app/logic/auth_bloc/auth_state.dart';
-import 'package:podcast_app/logic/podcast_details_bloc/podcast_details_bloc.dart';
 import 'package:podcast_app/logic/podcast_list_bloc/podcast_list_bloc.dart';
 import 'package:podcast_app/presentation/app_router/app_router.dart';
 import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
@@ -35,16 +34,22 @@ class MyApp extends StatelessWidget {
           create: (context) => PodcastListBloc(),
         ),
         BlocProvider(
-          create: (context) => PodcastDetailsBloc(),
-        ),
-        BlocProvider(
           create: (context) => AudioPlayerBloc(),
         ),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Podcastly',
         home: AuthCheck(),
+        theme: ThemeData.light().copyWith(
+            elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              )),
+        )),
         onGenerateRoute: AppRouter.generateRoute,
       ),
     );
@@ -64,10 +69,10 @@ class AuthCheck extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        if (state is AuthenticatedUser) {
-          return const TheBottomBar();
-        } else if (state is AuthLoading) {
+        if (state is AuthLoading) {
           return const Center(child: CircularProgressIndicator());
+        } else if (state is AuthenticatedUser) {
+          return const TheBottomBar();
         } else {
           return const WelcomePage();
         }

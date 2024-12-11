@@ -8,7 +8,6 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   AudioPlayerBloc() : super(const AudioPlayerState()) {
-    // Register event handlers
     on<PlayEpisode>(_onPlayEpisode);
     on<PauseEpisode>(_onPauseEpisode);
     on<ResumeEpisode>(_onResumeEpisode);

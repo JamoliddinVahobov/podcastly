@@ -15,3 +15,8 @@ class LoadPodcastDetails extends PodcastDetailsEvent {
   @override
   List<Object> get props => [podcastId];
 }
+
+class LoadMoreEpisodes extends PodcastDetailsEvent {
+  final String podcastId;
+  const LoadMoreEpisodes(this.podcastId);
+}

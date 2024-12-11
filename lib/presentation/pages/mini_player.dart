@@ -94,16 +94,7 @@ class MiniPlayer extends StatelessWidget {
           Text(
             episode['name'],
             style: const TextStyle(fontWeight: FontWeight.bold),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            episode['show'] ?? '',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 12,
-            ),
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         ],

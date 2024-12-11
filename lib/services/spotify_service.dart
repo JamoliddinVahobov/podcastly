@@ -64,27 +64,36 @@ class SpotifyService {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> fetchEpisodes(String showId) async {
+  static Future<List<Map<String, dynamic>>> fetchEpisodes(
+    String showId, {
+    required int offset,
+    required int limit,
+  }) async {
     try {
       String accessToken = await getAccessToken();
 
       final response = await http.get(
         Uri.parse(
-            'https://api.spotify.com/v1/shows/$showId/episodes?market=US'),
+            'https://api.spotify.com/v1/shows/$showId/episodes?market=US&limit=$limit&offset=$offset'),
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
       );
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
         final List<dynamic> items = jsonResponse['items'];
 
+        // Filter out null items and map only valid episodes
         return items
+            .where((item) =>
+                item != null) // Add this line to filter out null items
             .map((item) => {
                   'id': item['id'],
-                  'name': item['name'],
-                  'description': item['description'],
+                  'name': item['name'] ?? 'Untitled Episode',
+                  'description': item['description'] ?? '',
                   'duration_ms': item['duration_ms'],
                   'release_date': item['release_date'],
                   'audio_url': item['audio_preview_url'],
