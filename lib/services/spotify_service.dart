@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import '../sensitive_data/sensitive_data.dart';
 
 class SpotifyService {
   static Future<String> getAccessToken() async {
     final String basicAuth =
+        'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}';
 
     final response = await http.post(
       Uri.parse('https://accounts.spotify.com/api/token'),
