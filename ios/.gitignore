@@ -1,2 +1,2 @@
 # Ignore the sensitive_data folder
-sensitive_data/
+lib/sensitive_data/
