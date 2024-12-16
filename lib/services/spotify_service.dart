@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class SpotifyService {
+import '../sensitive_data/sensitive_data.dart';
 
+class SpotifyService {
   static Future<String> getAccessToken() async {
     final String basicAuth =
 
