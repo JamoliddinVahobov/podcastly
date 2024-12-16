@@ -25,7 +25,7 @@ class PodcastDetailsPage extends StatelessWidget {
                 background: Center(
                   child: Padding(
                     padding: EdgeInsets.only(
-                      top: MediaQuery.sizeOf(context).width * 0.07,
+                      top: MediaQuery.sizeOf(context).height * 0.04,
                     ),
                     child: Container(
                       height: 200,
@@ -46,7 +46,7 @@ class PodcastDetailsPage extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -126,6 +126,10 @@ class PodcastDetailsPage extends StatelessWidget {
                     }
 
                     final episode = state.episodes[index];
+                    Map<String, dynamic>? nextEpisode;
+                    if (index + 1 < state.episodes.length) {
+                      nextEpisode = state.episodes[index + 1];
+                    }
                     return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
                       builder: (context, audioState) {
                         final isCurrentlyPlaying =
@@ -151,7 +155,11 @@ class PodcastDetailsPage extends StatelessWidget {
                               final audioBloc = context.read<AudioPlayerBloc>();
 
                               if (isCurrentlyPlaying && audioState.isPlaying) {
-                                audioBloc.add(PauseEpisode());
+                                audioBloc.add(PauseEpisode(
+                                  audioUrl: episode['audio_url'],
+                                  episode: episode,
+                                  podcast: podcast,
+                                ));
                               } else {
                                 audioBloc.add(PlayEpisode(
                                   audioUrl: episode['audio_url'],
@@ -168,6 +176,7 @@ class PodcastDetailsPage extends StatelessWidget {
                                 builder: (context) => FullScreenPlayer(
                                   podcast: podcast,
                                   episode: episode,
+                                  nextEpisode: nextEpisode,
                                 ),
                               ),
                             );

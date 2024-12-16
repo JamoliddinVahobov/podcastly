@@ -7,9 +7,11 @@ import '../../logic/audio_player_bloc/audio_player_bloc.dart';
 class FullScreenPlayer extends StatelessWidget {
   final Map<String, dynamic> episode;
   final Map<String, dynamic> podcast;
+  final Map<String, dynamic>? nextEpisode;
 
   const FullScreenPlayer({
     super.key,
+    this.nextEpisode,
     required this.episode,
     required this.podcast,
   });
@@ -19,60 +21,49 @@ class FullScreenPlayer extends StatelessWidget {
     return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
       builder: (context, audioState) {
         return Scaffold(
-          body: DraggableScrollableSheet(
-            initialChildSize: 0.9,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            builder: (context, scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
+          body: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  // Container(
+                  //   width: 40,
+                  //   height: 4,
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.grey[300],
+                  //     borderRadius: BorderRadius.circular(2),
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: _buildEpisodeImage(),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: _buildEpisodeImage(),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              episode['name'],
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const SizedBox(height: 32),
-                            _buildPlaybackSlider(context, audioState),
-                            const SizedBox(height: 24),
-                            _buildPlayerControls(context, audioState),
-                          ],
+                        const SizedBox(height: 40),
+                        Text(
+                          episode['name'],
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 40),
+                        _buildPlaybackSlider(context, audioState),
+                        const SizedBox(height: 24),
+                        _buildPlayerControls(context, audioState),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -83,14 +74,14 @@ class FullScreenPlayer extends StatelessWidget {
     return episode['image'] != null && episode['image']!.isNotEmpty
         ? Image.network(
             episode['image']!,
-            width: double.infinity,
+            width: 300,
             height: 300,
             fit: BoxFit.cover,
           )
         : podcast['image'] != null && podcast['image']!.isNotEmpty
             ? Image.network(
                 podcast['image']!,
-                width: double.infinity,
+                width: 300,
                 height: 300,
                 fit: BoxFit.cover,
               )
@@ -169,7 +160,18 @@ class FullScreenPlayer extends StatelessWidget {
           onPressed: () {
             final audioBloc = context.read<AudioPlayerBloc>();
             if (audioState.playerState == PlayerState.playing) {
-              audioBloc.add(PauseEpisode());
+              audioBloc.add(PauseEpisode(
+                audioUrl: episode['audio_url'],
+                episode: episode,
+                podcast: podcast,
+              ));
+            } else if (audioState.playerState == PlayerState.paused) {
+              audioBloc.add(
+                ResumeEpisode(
+                    audioUrl: episode['audio_url'],
+                    episode: episode,
+                    podcast: podcast),
+              );
             } else {
               audioBloc.add(PlayEpisode(
                 audioUrl: episode['audio_url'],
@@ -188,6 +190,17 @@ class FullScreenPlayer extends StatelessWidget {
             context.read<AudioPlayerBloc>().add(
                   SeekEpisode(position: newPosition),
                 );
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.skip_next),
+          iconSize: 32,
+          onPressed: () {
+            context.read<AudioPlayerBloc>().add(SkipToNextEpisode(
+                  audioUrl: nextEpisode!['audio_url'],
+                  podcast: podcast,
+                  episode: nextEpisode!,
+                ));
           },
         ),
       ],

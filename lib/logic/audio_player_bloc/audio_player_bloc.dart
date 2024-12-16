@@ -14,15 +14,16 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     on<SeekEpisode>(_onSeekEpisode);
     on<UpdatePlaybackPosition>(_onUpdatePlaybackPosition);
     on<UpdatePlaybackDuration>(_onUpdatePlaybackDuration);
-
-    // Listen to audio player events
+    on<SkipToNextEpisode>(_onSkipToNextEpisode);
+    on<GoBackToPreviousEpisode>(_onGoBackToPreviousEpisode);
+    // Listens to audio player events
     _setupAudioPlayerListeners();
   }
 
   void _setupAudioPlayerListeners() {
     _audioPlayer.onPlayerStateChanged.listen((PlayerState state) async {
       final position = await _audioPlayer.getCurrentPosition();
-      final duration = await _audioPlayer.getDuration(); // Add this line
+      final duration = await _audioPlayer.getDuration();
       add(UpdatePlaybackPosition(
         position ?? Duration.zero,
         totalDuration: duration,
@@ -41,14 +42,11 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   Future<void> _onPlayEpisode(
       PlayEpisode event, Emitter<AudioPlayerState> emit) async {
     try {
-      // Stop current playback if any
       await _audioPlayer.stop();
-
       // Play new episode
       final source = UrlSource(event.audioUrl);
       await _audioPlayer.play(source);
 
-      // Update state
       emit(state.copyWith(
         playerState: PlayerState.playing,
         currentEpisode: event.episode,
@@ -59,16 +57,36 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     }
   }
 
-  Future<void> _onPauseEpisode(
-      PauseEpisode event, Emitter<AudioPlayerState> emit) async {
-    await _audioPlayer.pause();
-    emit(state.copyWith(playerState: PlayerState.paused));
+  Future<void> _onSkipToNextEpisode(
+      SkipToNextEpisode event, Emitter<AudioPlayerState> emit) async {
+    try {
+      await _audioPlayer.stop();
+      final source = UrlSource(event.audioUrl);
+      await _audioPlayer.play(source);
+
+      emit(state.copyWith(
+        playerState: PlayerState.playing,
+        currentEpisode: event.episode,
+        currentPodcast: event.podcast,
+      ));
+    } catch (e) {
+      print('Error going to the next episode: $e');
+    }
   }
+
+  Future<void> _onGoBackToPreviousEpisode(
+      GoBackToPreviousEpisode event, Emitter<AudioPlayerState> emit) async {}
 
   Future<void> _onResumeEpisode(
       ResumeEpisode event, Emitter<AudioPlayerState> emit) async {
     await _audioPlayer.resume();
     emit(state.copyWith(playerState: PlayerState.playing));
+  }
+
+  Future<void> _onPauseEpisode(
+      PauseEpisode event, Emitter<AudioPlayerState> emit) async {
+    await _audioPlayer.pause();
+    emit(state.copyWith(playerState: PlayerState.paused));
   }
 
   Future<void> _onSeekEpisode(

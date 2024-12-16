@@ -6,6 +6,7 @@ class AudioPlayerState extends Equatable {
   final Map<String, dynamic>? currentPodcast;
   final Duration currentPosition;
   final Duration? totalDuration;
+  final Map<String, dynamic>? nextEpisode;
 
   const AudioPlayerState({
     this.playerState = PlayerState.stopped,
@@ -13,6 +14,7 @@ class AudioPlayerState extends Equatable {
     this.currentPodcast,
     this.currentPosition = Duration.zero,
     this.totalDuration,
+    this.nextEpisode,
   });
 
   AudioPlayerState copyWith({
@@ -21,6 +23,8 @@ class AudioPlayerState extends Equatable {
     Map<String, dynamic>? currentPodcast,
     Duration? currentPosition,
     Duration? totalDuration,
+    Map<String, dynamic>? nextEpisode,
+    Map<String, dynamic>? previousEpisode,
   }) {
     return AudioPlayerState(
       playerState: playerState ?? this.playerState,
@@ -28,6 +32,7 @@ class AudioPlayerState extends Equatable {
       currentPodcast: currentPodcast ?? this.currentPodcast,
       currentPosition: currentPosition ?? this.currentPosition,
       totalDuration: totalDuration ?? this.totalDuration,
+      nextEpisode: nextEpisode ?? this.nextEpisode,
     );
   }
 
@@ -39,6 +44,7 @@ class AudioPlayerState extends Equatable {
         currentEpisode,
         currentPodcast,
         currentPosition,
-        totalDuration
+        totalDuration,
+        nextEpisode,
       ];
 }

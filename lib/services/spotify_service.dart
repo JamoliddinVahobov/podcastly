@@ -45,6 +45,7 @@ class SpotifyService {
           'Authorization': 'Bearer $accessToken',
         },
       );
+      print('accessToken: $accessToken');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);

@@ -104,6 +104,8 @@ class MiniPlayer extends StatelessWidget {
 
   Widget _buildPlayerControls(
       BuildContext context, AudioPlayerState audioState) {
+    final episode = audioState.currentEpisode!;
+    final podcast = audioState.currentPodcast!;
     return Row(
       children: [
         IconButton(
@@ -125,11 +127,20 @@ class MiniPlayer extends StatelessWidget {
           onPressed: () {
             final audioBloc = context.read<AudioPlayerBloc>();
             if (audioState.playerState == PlayerState.playing) {
-              audioBloc.add(PauseEpisode());
+              audioBloc.add(PauseEpisode(
+                audioUrl: episode['audio_url'],
+                episode: episode,
+                podcast: podcast,
+              ));
+            } else if (audioState.playerState == PlayerState.paused) {
+              audioBloc.add(ResumeEpisode(
+                audioUrl: episode['audio_url'],
+                episode: episode,
+                podcast: podcast,
+              ));
             } else {
               // This should not happen in MiniPlayer, but kept for completeness
-              final episode = audioState.currentEpisode!;
-              final podcast = audioState.currentPodcast!;
+
               audioBloc.add(PlayEpisode(
                 audioUrl: episode['audio_url'],
                 episode: episode,

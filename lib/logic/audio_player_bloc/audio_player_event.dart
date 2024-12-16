@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'audio_player_bloc.dart';
 
 abstract class AudioPlayerEvent extends Equatable {
@@ -19,9 +20,67 @@ class PlayEpisode extends AudioPlayerEvent {
   List<Object?> get props => [audioUrl, episode, podcast];
 }
 
-class PauseEpisode extends AudioPlayerEvent {}
+class SkipToNextEpisode extends AudioPlayerEvent {
+  final String audioUrl;
+  final Map<String, dynamic> episode;
+  final Map<String, dynamic> podcast;
 
-class ResumeEpisode extends AudioPlayerEvent {}
+  const SkipToNextEpisode({
+    required this.audioUrl,
+    required this.episode,
+    required this.podcast,
+  });
+  @override
+  List<Object?> get props => [
+        audioUrl,
+        episode,
+        podcast,
+      ];
+}
+
+class GoBackToPreviousEpisode extends AudioPlayerEvent {
+  final String audioUrl;
+  final Map<String, dynamic> episode;
+  final Map<String, dynamic> podcast;
+  final Map<String, dynamic> currentEpisode;
+  const GoBackToPreviousEpisode({
+    required this.audioUrl,
+    required this.episode,
+    required this.podcast,
+    required this.currentEpisode,
+  });
+  @override
+  List<Object?> get props => [
+        audioUrl,
+        episode,
+        podcast,
+        currentEpisode,
+      ];
+}
+
+class PauseEpisode extends AudioPlayerEvent {
+  final String audioUrl;
+  final Map<String, dynamic> episode;
+  final Map<String, dynamic> podcast;
+
+  const PauseEpisode(
+      {required this.audioUrl, required this.episode, required this.podcast});
+
+  @override
+  List<Object?> get props => [audioUrl, episode, podcast];
+}
+
+class ResumeEpisode extends AudioPlayerEvent {
+  final String audioUrl;
+  final Map<String, dynamic> episode;
+  final Map<String, dynamic> podcast;
+
+  const ResumeEpisode(
+      {required this.audioUrl, required this.episode, required this.podcast});
+
+  @override
+  List<Object?> get props => [audioUrl, episode, podcast];
+}
 
 class SeekEpisode extends AudioPlayerEvent {
   final Duration position;
