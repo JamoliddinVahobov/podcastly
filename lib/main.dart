@@ -13,11 +13,14 @@ import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
 import 'logic/auth_bloc/auth_event.dart';
 import 'presentation/bottom_navigation_bar/bottom_nav_bar.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await dotenv.load();
   runApp(const MyApp());
 }
 
@@ -40,7 +43,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Podcastly',
-        home: AuthCheck(),
+        home: const AuthCheck(),
         theme: ThemeData.light().copyWith(
             elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

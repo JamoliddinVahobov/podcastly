@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import '../sensitive_data/sensitive_data.dart';
 
 class SpotifyService {
+  static String clientId = dotenv.env['CLIENT_ID'] ?? 'default_client_id';
+  static String clientSecret =
+      dotenv.env['CLIENT_SECRET'] ?? 'default_client_secret';
   static Future<String> getAccessToken() async {
     final String basicAuth =
         'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}';
-
+    print('clientid: $clientId, clientSecret: $clientSecret');
     final response = await http.post(
       Uri.parse('https://accounts.spotify.com/api/token'),
       headers: {
@@ -17,6 +20,8 @@ class SpotifyService {
         'grant_type': 'client_credentials',
       },
     );
+    print('basic auth: $basicAuth');
+    print('body: ${response.body}');
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
