@@ -16,6 +16,8 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     on<UpdatePlaybackDuration>(_onUpdatePlaybackDuration);
     on<SkipToNextEpisode>(_onSkipToNextEpisode);
     on<GoBackToPreviousEpisode>(_onGoBackToPreviousEpisode);
+    on<DismissMiniPlayer>(_onDismissMiniPlayer);
+
     // Listens to audio player events
     _setupAudioPlayerListeners();
   }
@@ -44,6 +46,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     try {
       await _audioPlayer.stop();
       // Play new episode
+
       final source = UrlSource(event.audioUrl);
       await _audioPlayer.play(source);
 
@@ -106,6 +109,12 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   void _onUpdatePlaybackDuration(
       UpdatePlaybackDuration event, Emitter<AudioPlayerState> emit) {
     emit(state.copyWith(totalDuration: event.duration));
+  }
+
+  Future<void> _onDismissMiniPlayer(
+      DismissMiniPlayer event, Emitter<AudioPlayerState> emit) async {
+    await _audioPlayer.stop();
+    emit(state.copyWith(isMiniPlayerDismissed: true));
   }
 
   @override

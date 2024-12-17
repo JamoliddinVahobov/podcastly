@@ -12,48 +12,49 @@ class MiniPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
       builder: (context, audioState) {
-        if (audioState.currentEpisode == null) {
-          return const SizedBox.shrink();
-        }
-
         final episode = audioState.currentEpisode!;
         final podcast = audioState.currentPodcast!;
 
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FullScreenPlayer(
-                  podcast: podcast,
-                  episode: episode,
+        if (audioState.currentEpisode != null &&
+            audioState.isMiniPlayerDismissed == false) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullScreenPlayer(
+                    podcast: podcast,
+                    episode: episode,
+                  ),
                 ),
+              );
+            },
+            child: Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
               ),
-            );
-          },
-          child: Container(
-            height: 64,
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+              child: Row(
+                children: [
+                  _buildEpisodeImage(episode, podcast),
+                  Expanded(
+                    child: _buildEpisodeInfo(episode),
+                  ),
+                  _buildPlayerControls(context, audioState),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                _buildEpisodeImage(episode, podcast),
-                Expanded(
-                  child: _buildEpisodeInfo(episode),
-                ),
-                _buildPlayerControls(context, audioState),
-              ],
-            ),
-          ),
-        );
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
       },
     );
   }
@@ -158,6 +159,14 @@ class MiniPlayer extends StatelessWidget {
                   SeekEpisode(position: newPosition),
                 );
           },
+        ),
+        IconButton(
+          onPressed: () {
+            context.read<AudioPlayerBloc>().add(
+                  DismissMiniPlayer(),
+                );
+          },
+          icon: const Icon(Icons.cancel),
         ),
       ],
     );

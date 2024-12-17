@@ -26,14 +26,6 @@ class FullScreenPlayer extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 8),
-                  // Container(
-                  //   width: 40,
-                  //   height: 4,
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.grey[300],
-                  //     borderRadius: BorderRadius.circular(2),
-                  //   ),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(
