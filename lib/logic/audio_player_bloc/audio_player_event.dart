@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// audio_player_event.dart
 part of 'audio_player_bloc.dart';
 
 abstract class AudioPlayerEvent extends Equatable {
@@ -10,11 +10,14 @@ abstract class AudioPlayerEvent extends Equatable {
 
 class PlayEpisode extends AudioPlayerEvent {
   final String audioUrl;
-  final Map<String, dynamic> episode;
-  final Map<String, dynamic> podcast;
+  final Episode episode;
+  final Podcast podcast;
 
-  const PlayEpisode(
-      {required this.audioUrl, required this.episode, required this.podcast});
+  const PlayEpisode({
+    required this.audioUrl,
+    required this.episode,
+    required this.podcast,
+  });
 
   @override
   List<Object?> get props => [audioUrl, episode, podcast];
@@ -22,49 +25,46 @@ class PlayEpisode extends AudioPlayerEvent {
 
 class SkipToNextEpisode extends AudioPlayerEvent {
   final String audioUrl;
-  final Map<String, dynamic> episode;
-  final Map<String, dynamic> podcast;
+  final Episode episode;
+  final Podcast podcast;
 
   const SkipToNextEpisode({
     required this.audioUrl,
     required this.episode,
     required this.podcast,
   });
+
   @override
-  List<Object?> get props => [
-        audioUrl,
-        episode,
-        podcast,
-      ];
+  List<Object?> get props => [audioUrl, episode, podcast];
 }
 
 class GoBackToPreviousEpisode extends AudioPlayerEvent {
   final String audioUrl;
-  final Map<String, dynamic> episode;
-  final Map<String, dynamic> podcast;
-  final Map<String, dynamic> currentEpisode;
+  final Episode episode;
+  final Podcast podcast;
+  final Episode currentEpisode;
+
   const GoBackToPreviousEpisode({
     required this.audioUrl,
     required this.episode,
     required this.podcast,
     required this.currentEpisode,
   });
+
   @override
-  List<Object?> get props => [
-        audioUrl,
-        episode,
-        podcast,
-        currentEpisode,
-      ];
+  List<Object?> get props => [audioUrl, episode, podcast, currentEpisode];
 }
 
 class PauseEpisode extends AudioPlayerEvent {
   final String audioUrl;
-  final Map<String, dynamic> episode;
-  final Map<String, dynamic> podcast;
+  final Episode episode;
+  final Podcast podcast;
 
-  const PauseEpisode(
-      {required this.audioUrl, required this.episode, required this.podcast});
+  const PauseEpisode({
+    required this.audioUrl,
+    required this.episode,
+    required this.podcast,
+  });
 
   @override
   List<Object?> get props => [audioUrl, episode, podcast];
@@ -72,11 +72,14 @@ class PauseEpisode extends AudioPlayerEvent {
 
 class ResumeEpisode extends AudioPlayerEvent {
   final String audioUrl;
-  final Map<String, dynamic> episode;
-  final Map<String, dynamic> podcast;
+  final Episode episode;
+  final Podcast podcast;
 
-  const ResumeEpisode(
-      {required this.audioUrl, required this.episode, required this.podcast});
+  const ResumeEpisode({
+    required this.audioUrl,
+    required this.episode,
+    required this.podcast,
+  });
 
   @override
   List<Object?> get props => [audioUrl, episode, podcast];

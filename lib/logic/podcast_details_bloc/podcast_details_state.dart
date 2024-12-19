@@ -1,8 +1,8 @@
 part of 'podcast_details_bloc.dart';
 
 class PodcastDetailsState extends Equatable {
-  final Map<String, dynamic> podcast;
-  final List<Map<String, dynamic>> episodes;
+  final Podcast podcast;
+  final List<Episode> episodes;
   final bool isLoading;
   final String? error;
   final bool hasReachedMax;
@@ -18,8 +18,8 @@ class PodcastDetailsState extends Equatable {
   });
 
   PodcastDetailsState copyWith({
-    Map<String, dynamic>? podcast,
-    List<Map<String, dynamic>>? episodes,
+    Podcast? podcast,
+    List<Episode>? episodes,
     bool? isLoading,
     String? error,
     bool? hasReachedMax,

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:podcast_app/di/service_locator.dart';
 import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
 import '../../logic/auth_bloc/auth_bloc.dart';
 import '../../logic/auth_bloc/auth_state.dart';
-import '../../logic/podcast_list_bloc/podcast_list_bloc.dart';
+import '../../logic/podcast_list_cubit/podcast_list_cubit.dart';
+import '../../models/podcast_model.dart';
+import '../../repositories/abstract_repository.dart';
 import 'podcast_details_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -11,9 +14,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<AuthBloc, AuthState>(
+    final podcastRepository = getIt<PodcastRepository>();
+    return BlocProvider(
+      create: (context) => PodcastListCubit(repository: podcastRepository)
+        ..loadInitialPodcasts(),
+      child: Scaffold(
+        body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is UnauthenticatedUser) {
               Navigator.of(context).pushReplacement(
@@ -21,24 +27,14 @@ class HomePage extends StatelessWidget {
               );
             }
           },
-        ),
-      ],
-      child: BlocProvider(
-        create: (context) => PodcastListBloc()..add(LoadPodcasts()),
-        child: Scaffold(
-          body: BlocBuilder<PodcastListBloc, PodcastListState>(
+          child: BlocBuilder<PodcastListCubit, PodcastListState>(
             builder: (context, state) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<PodcastListBloc>().add(RefreshPodcasts());
+                  await context.read<PodcastListCubit>().refreshPodcasts();
                 },
                 child: GridView.builder(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 16,
-                    bottom: 16, // Adjust based on player state if needed
-                  ),
+                  padding: const EdgeInsets.all(16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: 0.75,
@@ -49,8 +45,11 @@ class HomePage extends StatelessWidget {
                       state.podcasts.length + (state.hasReachedMax ? 0 : 1),
                   itemBuilder: (context, index) {
                     if (index >= state.podcasts.length) {
-                      context.read<PodcastListBloc>().add(LoadMorePodcasts());
-                      return const Center(child: CircularProgressIndicator());
+                      context.read<PodcastListCubit>().loadMorePodcasts();
+                      return const Align(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(),
+                      );
                     }
                     return _buildPodcastCard(context, state.podcasts[index]);
                   },
@@ -63,7 +62,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildPodcastCard(BuildContext context, Map<String, dynamic> podcast) {
+  Widget _buildPodcastCard(BuildContext context, Podcast podcast) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -82,12 +81,19 @@ class HomePage extends StatelessWidget {
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(12)),
-              child: Image.network(
-                podcast['image'],
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 120,
-              ),
+              child: podcast.imageUrl != null
+                  ? Image.network(
+                      podcast.imageUrl!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: 120,
+                    )
+                  : Container(
+                      width: double.infinity,
+                      height: 120,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.podcasts, size: 40),
+                    ),
             ),
             Expanded(
               child: Padding(
@@ -96,7 +102,7 @@ class HomePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      podcast['name'],
+                      podcast.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -106,7 +112,7 @@ class HomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      podcast['publisher'],
+                      podcast.publisher,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],

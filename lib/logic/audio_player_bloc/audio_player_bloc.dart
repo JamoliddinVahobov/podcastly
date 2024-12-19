@@ -1,6 +1,10 @@
+// audio_player_bloc.dart
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:podcast_app/models/podcast_model.dart';
+import 'package:podcast_app/models/episode_model.dart';
+
 part 'audio_player_event.dart';
 part 'audio_player_state.dart';
 
@@ -18,7 +22,6 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     on<GoBackToPreviousEpisode>(_onGoBackToPreviousEpisode);
     on<DismissMiniPlayer>(_onDismissMiniPlayer);
 
-    // Listens to audio player events
     _setupAudioPlayerListeners();
   }
 
@@ -45,8 +48,6 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
       PlayEpisode event, Emitter<AudioPlayerState> emit) async {
     try {
       await _audioPlayer.stop();
-      // Play new episode
-
       final source = UrlSource(event.audioUrl);
       await _audioPlayer.play(source);
 

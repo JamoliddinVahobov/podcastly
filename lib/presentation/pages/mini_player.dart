@@ -1,6 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:podcast_app/models/episode_model.dart';
+import 'package:podcast_app/models/podcast_model.dart';
 import 'package:podcast_app/presentation/pages/fullscreen_player.dart';
 
 import '../../logic/audio_player_bloc/audio_player_bloc.dart';
@@ -15,8 +17,7 @@ class MiniPlayer extends StatelessWidget {
         final episode = audioState.currentEpisode!;
         final podcast = audioState.currentPodcast!;
 
-        if (audioState.currentEpisode != null &&
-            audioState.isMiniPlayerDismissed == false) {
+        if (audioState.currentEpisode != null) {
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -59,9 +60,8 @@ class MiniPlayer extends StatelessWidget {
     );
   }
 
-  Widget _buildEpisodeImage(
-      Map<String, dynamic> episode, Map<String, dynamic> podcast) {
-    String imageUrl = episode['image'] ?? podcast['image'] ?? '';
+  Widget _buildEpisodeImage(Episode episode, Podcast podcast) {
+    String imageUrl = episode.imageUrl ?? podcast.imageUrl ?? '';
 
     return imageUrl.isNotEmpty
         ? Image.network(
@@ -85,7 +85,7 @@ class MiniPlayer extends StatelessWidget {
     );
   }
 
-  Widget _buildEpisodeInfo(Map<String, dynamic> episode) {
+  Widget _buildEpisodeInfo(Episode episode) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -93,7 +93,7 @@ class MiniPlayer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            episode['name'],
+            episode.name,
             style: const TextStyle(fontWeight: FontWeight.bold),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -129,13 +129,13 @@ class MiniPlayer extends StatelessWidget {
             final audioBloc = context.read<AudioPlayerBloc>();
             if (audioState.playerState == PlayerState.playing) {
               audioBloc.add(PauseEpisode(
-                audioUrl: episode['audio_url'],
+                audioUrl: episode.imageUrl!,
                 episode: episode,
                 podcast: podcast,
               ));
             } else if (audioState.playerState == PlayerState.paused) {
               audioBloc.add(ResumeEpisode(
-                audioUrl: episode['audio_url'],
+                audioUrl: episode.imageUrl!,
                 episode: episode,
                 podcast: podcast,
               ));
@@ -143,7 +143,7 @@ class MiniPlayer extends StatelessWidget {
               // This should not happen in MiniPlayer, but kept for completeness
 
               audioBloc.add(PlayEpisode(
-                audioUrl: episode['audio_url'],
+                audioUrl: episode.imageUrl!,
                 episode: episode,
                 podcast: podcast,
               ));

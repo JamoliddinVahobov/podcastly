@@ -1,13 +1,14 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:podcast_app/models/episode_model.dart';
+import 'package:podcast_app/models/podcast_model.dart';
 import '../../logic/audio_player_bloc/audio_player_bloc.dart';
 
 class FullScreenPlayer extends StatelessWidget {
-  final Map<String, dynamic> episode;
-  final Map<String, dynamic> podcast;
-  final Map<String, dynamic>? nextEpisode;
+  final Episode episode;
+  final Podcast podcast;
+  final Episode? nextEpisode;
 
   const FullScreenPlayer({
     super.key,
@@ -40,7 +41,7 @@ class FullScreenPlayer extends StatelessWidget {
                         ),
                         const SizedBox(height: 40),
                         Text(
-                          episode['name'],
+                          episode.name,
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -63,23 +64,23 @@ class FullScreenPlayer extends StatelessWidget {
   }
 
   Widget _buildEpisodeImage() {
-    return episode['image'] != null && episode['image']!.isNotEmpty
+    return episode.imageUrl != null && episode.imageUrl!.isNotEmpty
         ? Image.network(
-            episode['image']!,
+            episode.imageUrl!,
             width: 300,
             height: 300,
             fit: BoxFit.cover,
           )
-        : podcast['image'] != null && podcast['image']!.isNotEmpty
+        : podcast.imageUrl != null && podcast.imageUrl!.isNotEmpty
             ? Image.network(
-                podcast['image']!,
+                podcast.imageUrl!,
                 width: 300,
                 height: 300,
                 fit: BoxFit.cover,
               )
             : const Center(
                 child: Text(
-                  'No image available for this podcast channel',
+                  'No image available for this episode',
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     color: Colors.grey,
@@ -114,7 +115,7 @@ class FullScreenPlayer extends StatelessWidget {
                 _formatDuration(audioState.currentPosition),
                 style: TextStyle(color: Colors.grey[600]),
               ),
-              if (audioState.totalDuration != null) // Add this check
+              if (audioState.totalDuration != null)
                 Text(
                   _formatDuration(audioState.totalDuration!),
                   style: TextStyle(color: Colors.grey[600]),
@@ -153,20 +154,20 @@ class FullScreenPlayer extends StatelessWidget {
             final audioBloc = context.read<AudioPlayerBloc>();
             if (audioState.playerState == PlayerState.playing) {
               audioBloc.add(PauseEpisode(
-                audioUrl: episode['audio_url'],
+                audioUrl: episode.audioUrl,
                 episode: episode,
                 podcast: podcast,
               ));
             } else if (audioState.playerState == PlayerState.paused) {
               audioBloc.add(
                 ResumeEpisode(
-                    audioUrl: episode['audio_url'],
+                    audioUrl: episode.audioUrl,
                     episode: episode,
                     podcast: podcast),
               );
             } else {
               audioBloc.add(PlayEpisode(
-                audioUrl: episode['audio_url'],
+                audioUrl: episode.audioUrl,
                 episode: episode,
                 podcast: podcast,
               ));
@@ -189,7 +190,7 @@ class FullScreenPlayer extends StatelessWidget {
           iconSize: 32,
           onPressed: () {
             context.read<AudioPlayerBloc>().add(SkipToNextEpisode(
-                  audioUrl: nextEpisode!['audio_url'],
+                  audioUrl: nextEpisode!.audioUrl,
                   podcast: podcast,
                   episode: nextEpisode!,
                 ));

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:podcast_app/main.dart';
 import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
 import 'package:podcast_app/presentation/auth%20pages/login_page.dart';
 import 'package:podcast_app/presentation/auth%20pages/signup_page.dart';
 import 'package:podcast_app/presentation/auth%20pages/verification_page.dart';
+import 'package:podcast_app/presentation/auth%20pages/auth_check_page.dart';
 import 'package:podcast_app/presentation/pages/home_page.dart';
 import '../bottom_navigation_bar/bottom_nav_bar.dart';
 
@@ -23,7 +23,7 @@ class AppRouter {
       case '/welcome':
         return MaterialPageRoute(builder: (_) => const WelcomePage());
       default:
-        return MaterialPageRoute(builder: (_) => const AuthCheck());
+        return MaterialPageRoute(builder: (_) => const AuthCheckPage());
     }
   }
 }

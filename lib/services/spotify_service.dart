@@ -1,69 +1,47 @@
-import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:podcast_app/services/token_management_service.dart';
+import '../models/episode_model.dart';
+import '../models/podcast_model.dart';
+import 'abstract_api_service.dart';
 
-class SpotifyService {
-  static String clientId = dotenv.env['CLIENT_ID'] ?? 'default_client_id';
-  static String clientSecret =
-      dotenv.env['CLIENT_SECRET'] ?? 'default_client_secret';
-  static Future<String> getAccessToken() async {
-    final String basicAuth =
-        'Basic ${base64Encode(utf8.encode('$clientId:$clientSecret'))}';
-    print('clientid: $clientId, clientSecret: $clientSecret');
-    final response = await http.post(
-      Uri.parse('https://accounts.spotify.com/api/token'),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': basicAuth,
-      },
-      body: {
-        'grant_type': 'client_credentials',
-      },
-    );
-    print('basic auth: $basicAuth');
-    print('body: ${response.body}');
+class SpotifyService implements ApiService {
+  final TokenManagementService _tokenService;
 
-    if (response.statusCode == 200) {
-      final jsonResponse = json.decode(response.body);
-      return jsonResponse['access_token'];
-    } else {
-      throw Exception('Failed to obtain access token: ${response.body}');
-    }
+  SpotifyService(this._tokenService);
+
+  Future<String> _getAccessToken() async {
+    return await _tokenService.getAccessToken();
   }
 
-  static Future<List<Map<String, dynamic>>> fetchPodcasts({
+  @override
+  Future<List<Podcast>> fetchPodcasts({
     required int offset,
     required int limit,
   }) async {
     try {
-      String accessToken = await getAccessToken();
+      String accessToken = await _getAccessToken();
 
-      final response = await http.get(
-        Uri.parse(
-            'https://api.spotify.com/v1/search?q=podcast&type=show&market=US&limit=$limit&offset=$offset'),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
+      final response = await Dio().get(
+        'https://api.spotify.com/v1/search',
+        queryParameters: {
+          'q': 'podcast',
+          'type': 'show',
+          'market': 'US',
+          'limit': limit,
+          'offset': offset,
         },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
       );
-      print('accessToken: $accessToken');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final List<dynamic> items = jsonResponse['shows']['items'];
-        final List<Map<String, dynamic>> podcasts = items
-            .map((item) => {
-                  'id': item['id'],
-                  'name': item['name'],
-                  'publisher': item['publisher'],
-                  'image': item['images'][0]['url'],
-                  'description': item['description'],
-                })
-            .toList()
-            .cast<Map<String, dynamic>>();
-
-        return podcasts;
+        final List<dynamic> items = response.data['shows']['items'];
+        return items.map((item) => Podcast.fromJson(item)).toList();
       } else {
-        throw Exception('Failed to load podcasts: ${response.body}');
+        throw Exception('Failed to load podcasts: ${response.data}');
       }
     } catch (e) {
       print('Error fetching podcasts: $e');
@@ -71,44 +49,34 @@ class SpotifyService {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> fetchEpisodes(
+  @override
+  Future<List<Episode>> fetchEpisodes(
     String showId, {
     required int offset,
     required int limit,
   }) async {
     try {
-      String accessToken = await getAccessToken();
+      String accessToken = await _getAccessToken();
 
-      final response = await http.get(
-        Uri.parse(
-            'https://api.spotify.com/v1/shows/$showId/episodes?market=US&limit=$limit&offset=$offset'),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
+      final response = await Dio().get(
+        'https://api.spotify.com/v1/shows/$showId/episodes',
+        queryParameters: {
+          'market': 'US',
+          'limit': limit,
+          'offset': offset,
         },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
       );
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final List<dynamic> items = jsonResponse['items'];
-
-        // Filter out null items and map only valid episodes
-        return items
-            .where((item) =>
-                item != null) // Add this line to filter out null items
-            .map((item) => {
-                  'id': item['id'],
-                  'name': item['name'] ?? 'Untitled Episode',
-                  'description': item['description'] ?? '',
-                  'duration_ms': item['duration_ms'],
-                  'release_date': item['release_date'],
-                  'audio_url': item['audio_preview_url'],
-                })
-            .toList()
-            .cast<Map<String, dynamic>>();
+        final List<dynamic> items = response.data['items'];
+        return items.map((item) => Episode.fromJson(item)).toList();
       } else {
-        throw Exception('Failed to load episodes: ${response.body}');
+        throw Exception('Failed to load episodes: ${response.data}');
       }
     } catch (e) {
       print('Error fetching episodes: $e');

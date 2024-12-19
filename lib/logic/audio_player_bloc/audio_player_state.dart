@@ -2,11 +2,11 @@ part of 'audio_player_bloc.dart';
 
 class AudioPlayerState extends Equatable {
   final PlayerState playerState;
-  final Map<String, dynamic>? currentEpisode;
-  final Map<String, dynamic>? currentPodcast;
+  final Episode? currentEpisode;
+  final Podcast? currentPodcast;
   final Duration currentPosition;
   final Duration? totalDuration;
-  final Map<String, dynamic>? nextEpisode;
+  final Episode? nextEpisode;
   final bool? isMiniPlayerDismissed;
 
   const AudioPlayerState({
@@ -21,12 +21,12 @@ class AudioPlayerState extends Equatable {
 
   AudioPlayerState copyWith({
     PlayerState? playerState,
-    Map<String, dynamic>? currentEpisode,
-    Map<String, dynamic>? currentPodcast,
+    Episode? currentEpisode,
+    Podcast? currentPodcast,
     Duration? currentPosition,
     Duration? totalDuration,
-    Map<String, dynamic>? nextEpisode,
-    Map<String, dynamic>? previousEpisode,
+    Episode? nextEpisode,
+    Episode? previousEpisode,
     bool? isMiniPlayerDismissed,
   }) {
     return AudioPlayerState(

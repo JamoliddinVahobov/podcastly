@@ -1,21 +1,28 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:podcast_app/di/service_locator.dart';
+import 'package:podcast_app/models/episode_model.dart';
+import 'package:podcast_app/models/podcast_model.dart';
 import 'package:podcast_app/presentation/pages/fullscreen_player.dart';
 import 'package:podcast_app/presentation/pages/mini_player.dart';
+import 'package:podcast_app/utils/screen_size_utils.dart';
 import '../../logic/audio_player_bloc/audio_player_bloc.dart';
 import '../../logic/podcast_details_bloc/podcast_details_bloc.dart';
+import '../../repositories/abstract_repository.dart';
 
 class PodcastDetailsPage extends StatelessWidget {
-  final Map<String, dynamic> podcast;
+  final Podcast podcast;
 
   const PodcastDetailsPage({super.key, required this.podcast});
 
   @override
   Widget build(BuildContext context) {
+    final podcastRepository = getIt<PodcastRepository>();
     return BlocProvider(
       create: (context) =>
-          PodcastDetailsBloc(podcast)..add(LoadPodcastDetails(podcast['id'])),
+          PodcastDetailsBloc(podcast, repository: podcastRepository)
+            ..add(LoadPodcastDetails(podcast.id)),
       child: Scaffold(
         body: Stack(
           children: [
@@ -29,7 +36,7 @@ class PodcastDetailsPage extends StatelessWidget {
                     background: Center(
                       child: Padding(
                         padding: EdgeInsets.only(
-                          top: MediaQuery.sizeOf(context).height * 0.04,
+                          top: ScreenSize.screenHeight * 0.04,
                         ),
                         child: Container(
                           height: 200,
@@ -37,7 +44,8 @@ class PodcastDetailsPage extends StatelessWidget {
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: NetworkImage(
-                                podcast['image'],
+                                podcast.imageUrl ??
+                                    'No image available for this podcast',
                               ),
                               fit: BoxFit.cover,
                             ),
@@ -55,7 +63,7 @@ class PodcastDetailsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          podcast['name'],
+                          podcast.name,
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
@@ -66,7 +74,7 @@ class PodcastDetailsPage extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 10),
-                        if (podcast['publisher'] != '')
+                        if (podcast.publisher.isNotEmpty)
                           RichText(
                             text: TextSpan(children: [
                               const TextSpan(
@@ -78,7 +86,7 @@ class PodcastDetailsPage extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: podcast['publisher'],
+                                text: podcast.publisher,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.black,
@@ -87,7 +95,7 @@ class PodcastDetailsPage extends StatelessWidget {
                             ]),
                           ),
                         const SizedBox(height: 10),
-                        if (podcast['description'] != '')
+                        if (podcast.description?.isNotEmpty ?? false)
                           RichText(
                             text: TextSpan(children: [
                               const TextSpan(
@@ -99,7 +107,7 @@ class PodcastDetailsPage extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: podcast['description'],
+                                text: podcast.description ?? '',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.black,
@@ -123,42 +131,38 @@ class PodcastDetailsPage extends StatelessWidget {
                           ? state.episodes.length
                           : state.episodes.length + 1,
                       itemBuilder: (context, index) {
-                        // Check if this is the last item and load more if necessary
                         if (index == state.episodes.length) {
                           context
                               .read<PodcastDetailsBloc>()
-                              .add(LoadMoreEpisodes(podcast['id']));
+                              .add(LoadMoreEpisodes(podcast.id));
                           return const Center(
                               child: CircularProgressIndicator());
                         }
 
                         final episode = state.episodes[index];
-                        Map<String, dynamic>? nextEpisode;
-                        if (index + 1 < state.episodes.length) {
-                          nextEpisode = state.episodes[index + 1];
-                        }
+                        final Episode? nextEpisode =
+                            index + 1 < state.episodes.length
+                                ? state.episodes[index + 1]
+                                : null;
+
                         return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
                           builder: (context, audioState) {
                             final isCurrentlyPlaying =
-                                audioState.currentEpisode?['id'] ==
-                                    episode['id'];
+                                audioState.currentEpisode?.id == episode.id;
 
                             return ListTile(
                               title: Text(
-                                episode['name'],
+                                episode.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               subtitle: Text(
-                                'Released in: ${episode['release_date']}',
+                                'Released in: ${episode.releaseDate}',
                                 style: const TextStyle(fontSize: 12),
                               ),
                               trailing: IconButton(
                                 icon: Icon(
-                                  isCurrentlyPlaying &&
-                                          audioState.isPlaying &&
-                                          audioState.isMiniPlayerDismissed ==
-                                              false
+                                  isCurrentlyPlaying && audioState.isPlaying
                                       ? Icons.pause_circle_filled
                                       : Icons.play_circle_filled,
                                 ),
@@ -169,7 +173,7 @@ class PodcastDetailsPage extends StatelessWidget {
                                   if (isCurrentlyPlaying &&
                                       audioState.isPlaying) {
                                     audioBloc.add(PauseEpisode(
-                                      audioUrl: episode['audio_url'],
+                                      audioUrl: episode.audioUrl,
                                       episode: episode,
                                       podcast: podcast,
                                     ));
@@ -177,13 +181,14 @@ class PodcastDetailsPage extends StatelessWidget {
                                       PlayerState.paused) {
                                     audioBloc.add(
                                       ResumeEpisode(
-                                          audioUrl: episode['audio_url'],
-                                          episode: episode,
-                                          podcast: podcast),
+                                        audioUrl: episode.audioUrl,
+                                        episode: episode,
+                                        podcast: podcast,
+                                      ),
                                     );
                                   } else {
                                     audioBloc.add(PlayEpisode(
-                                      audioUrl: episode['audio_url'],
+                                      audioUrl: episode.audioUrl,
                                       episode: episode,
                                       podcast: podcast,
                                     ));
@@ -211,13 +216,13 @@ class PodcastDetailsPage extends StatelessWidget {
                 ),
                 const SliverToBoxAdapter(
                   child: SizedBox(height: 30),
-                )
+                ),
               ],
             ),
             BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
               builder: (context, audioState) {
                 if (audioState.currentEpisode != null &&
-                    audioState.isMiniPlayerDismissed == false) {
+                    audioState.isMiniPlayerDismissed != false) {
                   return const Positioned(
                     left: 0,
                     right: 0,
