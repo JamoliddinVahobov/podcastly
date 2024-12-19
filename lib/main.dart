@@ -8,7 +8,7 @@ import 'package:podcast_app/logic/auth_bloc/auth_bloc.dart';
 import 'package:podcast_app/presentation/app_router/app_router.dart';
 import 'package:podcast_app/presentation/auth%20pages/auth_check_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'di/service_locator.dart';
+import 'dependency_injection/service_locator.dart';
 import 'utils/screen_size_utils.dart';
 
 Future<void> main() async {

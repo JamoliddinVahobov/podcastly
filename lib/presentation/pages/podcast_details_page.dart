@@ -1,7 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/di/service_locator.dart';
+import 'package:podcast_app/dependency_injection/service_locator.dart';
 import 'package:podcast_app/models/episode_model.dart';
 import 'package:podcast_app/models/podcast_model.dart';
 import 'package:podcast_app/presentation/pages/fullscreen_player.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/di/service_locator.dart';
+import 'package:podcast_app/dependency_injection/service_locator.dart';
 import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
 import '../../logic/auth_bloc/auth_bloc.dart';
 import '../../logic/auth_bloc/auth_state.dart';
