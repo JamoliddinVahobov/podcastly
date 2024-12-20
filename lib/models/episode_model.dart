@@ -18,6 +18,13 @@ class Episode {
   });
 
   factory Episode.fromJson(Map<String, dynamic> json) {
+    // Access the images list and get the 300px size image URL
+    final images = json['images'] as List<dynamic>;
+    final imageUrl = images.firstWhere(
+      (image) => image['height'] == 300,
+      orElse: () => null,
+    )?['url']; // Get the image URL if available, otherwise return null
+
     return Episode(
       id: json['id'],
       name: json['name'] ?? 'Untitled Episode',
@@ -25,7 +32,7 @@ class Episode {
       duration: json['duration_ms'] ?? 0,
       releaseDate: json['release_date'],
       audioUrl: json['audio_preview_url'] ?? '',
-      imageUrl: json['episode_image'] ?? '',
+      imageUrl: imageUrl,
     );
   }
 
@@ -37,7 +44,7 @@ class Episode {
       'duration_ms': duration,
       'release_date': releaseDate,
       'audio_preview_url': audioUrl,
-      if (imageUrl != null) 'episode_image': imageUrl,
+      'imageUrl': imageUrl ?? '',
     };
   }
 }

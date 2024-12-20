@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/audio_player_bloc/audio_player_bloc.dart';
-import '../pages/home_page.dart';
-import '../pages/mini_player.dart';
-import '../pages/search_page.dart';
-import '../pages/settings_page.dart';
+import '../most_pages/home_page.dart';
+import '../most_pages/mini_player.dart';
+import '../most_pages/search_page.dart';
+import '../most_pages/settings_page.dart';
 
 class TheBottomBar extends StatefulWidget {
   const TheBottomBar({super.key});

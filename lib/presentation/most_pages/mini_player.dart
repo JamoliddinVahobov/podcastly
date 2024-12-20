@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/models/episode_model.dart';
 import 'package:podcast_app/models/podcast_model.dart';
-import 'package:podcast_app/presentation/pages/fullscreen_player.dart';
+import 'package:podcast_app/presentation/most_pages/fullscreen_player.dart';
 
 import '../../logic/audio_player_bloc/audio_player_bloc.dart';
 

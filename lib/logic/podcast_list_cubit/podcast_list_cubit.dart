@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:podcast_app/models/podcast_model.dart';
-import '../../repositories/abstract_repository.dart';
+import '../../repositories/abstract_podcast_repository.dart';
 part 'podcast_list_state.dart';
 
 class PodcastListCubit extends Cubit<PodcastListState> {
@@ -33,6 +33,7 @@ class PodcastListCubit extends Cubit<PodcastListState> {
 
       _offset = _limit;
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(isLoading: false));
       print('Error loading podcasts: $e');
     }

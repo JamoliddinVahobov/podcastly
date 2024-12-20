@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:podcast_app/models/podcast_model.dart';
 import '../../models/episode_model.dart';
-import '../../repositories/abstract_repository.dart';
+import '../../repositories/abstract_podcast_repository.dart';
 part 'podcast_details_event.dart';
 part 'podcast_details_state.dart';
 
@@ -11,10 +11,11 @@ class PodcastDetailsBloc
   final PodcastRepository _repository;
   final int _limit = 30;
 
-  PodcastDetailsBloc(Podcast initialPodcast,
-      {required PodcastRepository repository})
-      : _repository = repository,
-        super(PodcastDetailsState(podcast: initialPodcast)) {
+  PodcastDetailsBloc(
+    Podcast initialPodcasts, {
+    required PodcastRepository repository,
+  })  : _repository = repository,
+        super(PodcastDetailsState(podcast: initialPodcasts)) {
     on<LoadPodcastDetails>(_onLoadPodcastDetails);
     on<LoadMoreEpisodes>(_onLoadMoreEpisodes);
   }
@@ -32,6 +33,7 @@ class PodcastDetailsBloc
 
       final episodes = List<Episode>.from(
         episodesJson.map((episodeJson) {
+          print('Episode JSON: $episodeJson');
           if (episodeJson is Map<String, dynamic>) {
             return Episode.fromJson(episodeJson as Map<String, dynamic>);
           }
@@ -39,25 +41,12 @@ class PodcastDetailsBloc
         }),
       );
 
-      // Update the podcast with the new episodes
-      final updatedPodcast = Podcast(
-        id: state.podcast.id,
-        name: state.podcast.name,
-        publisher: state.podcast.publisher,
-        imageUrl: state.podcast.imageUrl,
-        description: state.podcast.description,
+      emit(state.copyWith(
         episodes: episodes,
-      );
-
-      emit(
-        state.copyWith(
-          podcast: updatedPodcast,
-          episodes: episodes,
-          isLoading: false,
-          hasReachedMax: episodes.length < _limit,
-          currentOffset: episodes.length,
-        ),
-      );
+        isLoading: false,
+        hasReachedMax: episodes.length < _limit,
+        currentOffset: episodes.length,
+      ));
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
@@ -91,18 +80,7 @@ class PodcastDetailsBloc
 
       final updatedEpisodes = [...state.episodes, ...moreEpisodes];
 
-      // Update the podcast with all episodes
-      final updatedPodcast = Podcast(
-        id: state.podcast.id,
-        name: state.podcast.name,
-        publisher: state.podcast.publisher,
-        imageUrl: state.podcast.imageUrl,
-        description: state.podcast.description,
-        episodes: updatedEpisodes,
-      );
-
       emit(state.copyWith(
-        podcast: updatedPodcast,
         episodes: updatedEpisodes,
         currentOffset: updatedEpisodes.length,
         hasReachedMax: moreEpisodes.length < _limit,

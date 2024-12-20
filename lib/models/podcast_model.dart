@@ -1,18 +1,14 @@
-import 'episode_model.dart';
-
 class Podcast {
   final String id;
   final String name;
   final String publisher;
   final String? imageUrl;
   final String? description;
-  final List<Episode>? episodes;
 
   Podcast({
     required this.id,
     required this.name,
     required this.publisher,
-    this.episodes,
     this.imageUrl,
     this.description,
   });
@@ -25,9 +21,6 @@ class Podcast {
       imageUrl:
           json['images']?.isNotEmpty ?? false ? json['images'][0]['url'] : null,
       description: json['description'] ?? '',
-      episodes: json['episodes'] != null
-          ? (json['episodes'] as List).map((e) => Episode.fromJson(e)).toList()
-          : null,
     );
   }
 
@@ -38,7 +31,6 @@ class Podcast {
       'publisher': publisher,
       'imageUrl': imageUrl,
       'description': description,
-      'episodes': episodes?.map((e) => e.toJson()).toList(),
     };
   }
 }

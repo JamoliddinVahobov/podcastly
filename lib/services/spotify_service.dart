@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:podcast_app/services/token_management_service.dart';
 import '../models/episode_model.dart';
 import '../models/podcast_model.dart';
-import 'abstract_api_service.dart';
+import 'abstract_podcast_service.dart';
 
 class SpotifyService implements ApiService {
   final TokenManagementService _tokenService;
@@ -71,10 +71,19 @@ class SpotifyService implements ApiService {
           },
         ),
       );
+      print('show id $showId');
+      // print('Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final List<dynamic> items = response.data['items'];
-        return items.map((item) => Episode.fromJson(item)).toList();
+
+        return items.map((item) {
+          if (item is Map<String, dynamic>) {
+            return Episode.fromJson(item);
+          } else {
+            throw const FormatException('Invalid episode format');
+          }
+        }).toList();
       } else {
         throw Exception('Failed to load episodes: ${response.data}');
       }

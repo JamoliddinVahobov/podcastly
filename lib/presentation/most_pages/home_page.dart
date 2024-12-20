@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/dependency_injection/service_locator.dart';
-import 'package:podcast_app/presentation/auth%20pages/welcome_page.dart';
 import '../../logic/auth_bloc/auth_bloc.dart';
 import '../../logic/auth_bloc/auth_state.dart';
 import '../../logic/podcast_list_cubit/podcast_list_cubit.dart';
 import '../../models/podcast_model.dart';
-import '../../repositories/abstract_repository.dart';
+import '../../repositories/abstract_podcast_repository.dart';
 import 'podcast_details_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -22,8 +21,10 @@ class HomePage extends StatelessWidget {
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is UnauthenticatedUser) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const WelcomePage()),
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/welcome',
+                (route) => false,
               );
             }
           },

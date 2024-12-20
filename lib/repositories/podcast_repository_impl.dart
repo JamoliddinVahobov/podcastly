@@ -1,7 +1,7 @@
 import '../models/episode_model.dart';
 import '../models/podcast_model.dart';
 import '../services/spotify_service.dart';
-import 'abstract_repository.dart';
+import 'abstract_podcast_repository.dart';
 
 class PodcastRepositoryImpl implements PodcastRepository {
   final SpotifyService _spotifyService;
