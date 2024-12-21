@@ -2,14 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/firebase_options.dart';
-import 'package:podcast_app/logic/audio_player_bloc/audio_player_bloc.dart';
-import 'package:podcast_app/logic/auth_bloc/auth_bloc.dart';
-import 'package:podcast_app/presentation/app_router/app_router.dart';
-import 'package:podcast_app/presentation/auth_pages/auth_check_page.dart';
+import 'package:podcast_app/firebase/firebase_options.dart';
+import 'package:podcast_app/features/episode_player/logic/audio_player_bloc/audio_player_bloc.dart';
+import 'package:podcast_app/features/auth/logic/auth_bloc.dart';
+import 'package:podcast_app/core/navigation/app_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'dependency_injection/service_locator.dart';
-import 'utils/screen_size_utils.dart';
+import 'core/dependency_injection/service_locator.dart';
+import 'core/utils/screen_size_utils.dart';
+import 'features/auth/presentation/auth_check_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
