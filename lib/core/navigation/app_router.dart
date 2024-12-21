@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:podcast_app/features/podcast_details/presentation/home_page.dart';
-import '../../features/auth/presentation/auth_check_page.dart';
-import '../../features/auth/presentation/login_page.dart';
-import '../../features/auth/presentation/signup_page.dart';
-import '../../features/auth/presentation/verification_page.dart';
-import '../../features/auth/presentation/welcome_page.dart';
+import '../../features/auth/presentation/pages/auth_check_page.dart';
+import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/signup_page.dart';
+import '../../features/auth/presentation/pages/verification_page.dart';
+import '../../features/auth/presentation/pages/welcome_page.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 class AppRouter {

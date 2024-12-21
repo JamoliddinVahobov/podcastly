@@ -2,14 +2,14 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/core/dependency_injection/service_locator.dart';
-import 'package:podcast_app/features/podcast_details/data/models/episode_model.dart';
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
+import 'package:podcast_app/core/models/episode_model.dart';
+import 'package:podcast_app/core/models/podcast_model.dart';
 import 'package:podcast_app/features/episode_player/presentation/fullscreen_player.dart';
 import 'package:podcast_app/features/episode_player/presentation/mini_player.dart';
 import 'package:podcast_app/core/utils/screen_size_utils.dart';
 import '../../episode_player/logic/audio_player_bloc/audio_player_bloc.dart';
 import '../logic/podcast_details_bloc/podcast_details_bloc.dart';
-import '../data/repositories/abstract_podcast_repository.dart';
+import '../../../core/repositories/abstract_podcast_repository.dart';
 
 class PodcastDetailsPage extends StatelessWidget {
   final Podcast podcast;

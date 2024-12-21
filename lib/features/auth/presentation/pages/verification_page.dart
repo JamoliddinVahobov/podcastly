@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:podcast_app/features/auth/logic/auth_event.dart';
 
-import '../logic/auth_bloc.dart';
-import '../logic/auth_state.dart';
+import '../../logic/auth_bloc.dart';
+import '../../logic/auth_state.dart';
+import '../widgets/custom_button.dart';
 
 class VerificationPage extends StatelessWidget {
   const VerificationPage({super.key});
@@ -64,32 +65,17 @@ class VerificationPage extends StatelessWidget {
               },
             ),
             const SizedBox(height: 30),
-            GestureDetector(
-              onTap: () {
+            CustomButton(
+              label: 'Go to Login page',
+              onPressed: () {
                 FirebaseAuth.instance.signOut();
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  '/login', // Navigate to login page
+                  '/login',
                   (route) => false,
                 );
               },
-              child: Container(
-                alignment: Alignment.center,
-                height: 50,
-                width: MediaQuery.of(context).size.width * 0.55,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  gradient: LinearGradient(
-                    colors: [Colors.blue.shade700, Colors.blue.shade600],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
-                child: const Text(
-                  'Go to Login page',
-                  style: TextStyle(fontSize: 17, color: Colors.white),
-                ),
-              ),
+              colors: [Colors.blue.shade700, Colors.blue.shade600],
             ),
           ],
         ),

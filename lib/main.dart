@@ -9,7 +9,7 @@ import 'package:podcast_app/core/navigation/app_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/dependency_injection/service_locator.dart';
 import 'core/utils/screen_size_utils.dart';
-import 'features/auth/presentation/auth_check_page.dart';
+import 'features/auth/presentation/pages/auth_check_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

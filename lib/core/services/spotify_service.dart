@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:podcast_app/features/podcast_details/data/services/token_management_service.dart';
+import 'package:podcast_app/core/services/token_management_service.dart';
 import '../models/episode_model.dart';
 import '../models/podcast_model.dart';
 import 'abstract_podcast_service.dart';
@@ -61,7 +61,6 @@ class SpotifyService implements ApiService {
       final response = await Dio().get(
         'https://api.spotify.com/v1/shows/$showId/episodes',
         queryParameters: {
-          'market': 'US',
           'limit': limit,
           'offset': offset,
         },

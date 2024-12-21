@@ -5,7 +5,9 @@ import 'package:podcast_app/features/auth/logic/auth_bloc.dart';
 import 'package:podcast_app/features/auth/logic/auth_event.dart';
 import 'package:podcast_app/features/auth/logic/auth_state.dart';
 
-import '../../../../core/helpers/helpers.dart';
+import '../../../../../core/helpers/helpers.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -80,15 +82,15 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildTextField(
+                    CustomTextField(
                       controller: emailController,
                       label: 'Email',
                       hint: 'Enter your email here',
                       keyboardType: TextInputType.emailAddress,
                       errorText: emailError,
-                      validator: _validateEmail,
+                      validatorType: 'email',
                     ),
-                    _buildTextField(
+                    CustomTextField(
                       controller: passwordController,
                       label: 'Password',
                       hint: 'Enter your password here',
@@ -96,9 +98,11 @@ class _LoginPageState extends State<LoginPage> {
                       focusNode: passwordFocusNode,
                       suffixIcon: passwordFocusNode.hasFocus
                           ? IconButton(
-                              icon: Icon(obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility),
+                              icon: Icon(
+                                obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   obscurePassword = !obscurePassword;
@@ -107,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                             )
                           : null,
                       errorText: passwordError,
-                      validator: _validatePassword,
+                      validatorType: 'password',
                     ),
                     SizedBox(height: 20),
                     if (state is AuthLoading)
@@ -118,8 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       )
                     else
-                      _buildButton(
-                        context: context,
+                      CustomButton(
                         label: 'Log in',
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
@@ -157,114 +160,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               );
             },
-          ),
-        ),
-      ),
-    );
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email cannot be empty';
-    }
-
-    const emailPattern =
-        r'^[a-zA-Z0-9]+([._%+-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$';
-    final regExp = RegExp(emailPattern);
-
-    if (!regExp.hasMatch(value)) {
-      return 'Please enter a valid email';
-    }
-
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Password cannot be empty';
-    } else if (value.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-    return null; // No error
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    FocusNode? focusNode,
-    Widget? suffixIcon,
-    String? errorText,
-    String? Function(String?)? validator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        focusNode: focusNode,
-        style: TextStyle(fontSize: 16, color: Colors.black),
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          suffixIcon: suffixIcon,
-          errorText: errorText, // Display error text here
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 17, horizontal: 15),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(color: Colors.grey[500]!, width: 2.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(color: Colors.blueAccent, width: 2.5),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(color: Colors.red, width: 2.0),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(color: Colors.redAccent, width: 2.5),
-          ),
-        ),
-        validator: validator,
-      ),
-    );
-  }
-
-  Widget _buildButton({
-    required BuildContext context,
-    required String label,
-    required VoidCallback onPressed,
-    required List<Color> colors,
-    double widthFactor = 0.55,
-    double height = 50,
-    double fontSize = 20,
-  }) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        alignment: Alignment.center,
-        height: height,
-        width: MediaQuery.of(context).size.width * widthFactor,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          gradient: LinearGradient(
-            colors: colors,
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: fontSize,
-            color: Colors.white,
           ),
         ),
       ),

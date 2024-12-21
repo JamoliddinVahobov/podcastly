@@ -1,8 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/features/podcast_details/data/models/episode_model.dart';
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
+import 'package:podcast_app/core/models/episode_model.dart';
+import 'package:podcast_app/core/models/podcast_model.dart';
 import '../logic/audio_player_bloc/audio_player_bloc.dart';
 
 class FullScreenPlayer extends StatelessWidget {

@@ -1,8 +1,8 @@
 import 'package:get_it/get_it.dart';
-import 'package:podcast_app/features/podcast_details/data/services/token_management_service.dart';
-import '../../features/podcast_details/data/repositories/abstract_podcast_repository.dart';
-import '../../features/podcast_details/data/services/spotify_service.dart';
-import '../../features/podcast_details/data/repositories/podcast_repository_impl.dart';
+import 'package:podcast_app/core/services/token_management_service.dart';
+import '../repositories/abstract_podcast_repository.dart';
+import '../services/spotify_service.dart';
+import '../repositories/podcast_repository_impl.dart';
 
 final getIt = GetIt.instance;
 

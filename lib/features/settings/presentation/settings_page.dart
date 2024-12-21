@@ -33,6 +33,11 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 Navigator.pop(context);
                 context.read<AuthBloc>().add(LogoutRequested());
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/login',
+                  (route) => false,
+                );
               },
               child: const Text('Yes'),
             ),

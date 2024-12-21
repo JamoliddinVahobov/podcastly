@@ -187,6 +187,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await _auth.signOut();
         emit(UnauthenticatedUser());
       } catch (e) {
+        print('error is logout: $e');
         emit(AuthError(
           message: 'Something went wrong, please try again.',
           source: 'logout_error',
