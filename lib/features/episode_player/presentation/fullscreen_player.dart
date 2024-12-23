@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/core/models/episode_model.dart';
 import 'package:podcast_app/core/models/podcast_model.dart';
+import '../../../core/enums/image_size_enums.dart';
+import '../../../core/helpers/helpers.dart';
 import '../logic/audio_player_bloc/audio_player_bloc.dart';
 
 class FullScreenPlayer extends StatelessWidget {
@@ -64,16 +66,18 @@ class FullScreenPlayer extends StatelessWidget {
   }
 
   Widget _buildEpisodeImage() {
-    return episode.imageUrl != null && episode.imageUrl!.isNotEmpty
+    return episode.getImageForSize(ImageSize.large) != null &&
+            episode.getImageForSize(ImageSize.large)!.isNotEmpty
         ? Image.network(
-            episode.imageUrl!,
+            episode.largeImageUrl!,
             width: 300,
             height: 300,
             fit: BoxFit.cover,
           )
-        : podcast.imageUrl != null && podcast.imageUrl!.isNotEmpty
+        : podcast.getImageForSize(ImageSize.large) != null &&
+                podcast.getImageForSize(ImageSize.large)!.isNotEmpty
             ? Image.network(
-                podcast.imageUrl!,
+                podcast.getImageForSize(ImageSize.large)!,
                 width: 300,
                 height: 300,
                 fit: BoxFit.cover,
@@ -112,12 +116,12 @@ class FullScreenPlayer extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _formatDuration(audioState.currentPosition),
+                Helpers.formatDuration(audioState.currentPosition),
                 style: TextStyle(color: Colors.grey[600]),
               ),
               if (audioState.totalDuration != null)
                 Text(
-                  _formatDuration(audioState.totalDuration!),
+                  Helpers.formatDuration(audioState.totalDuration!),
                   style: TextStyle(color: Colors.grey[600]),
                 ),
             ],
@@ -198,12 +202,5 @@ class FullScreenPlayer extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "${duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : ''}$twoDigitMinutes:$twoDigitSeconds";
   }
 }

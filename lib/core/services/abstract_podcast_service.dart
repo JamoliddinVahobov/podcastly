@@ -1,7 +1,7 @@
 import '../models/episode_model.dart';
 import '../models/podcast_model.dart';
 
-abstract class ApiService {
+abstract class PocastService {
   Future<List<Podcast>> fetchPodcasts({
     required int offset,
     required int limit,

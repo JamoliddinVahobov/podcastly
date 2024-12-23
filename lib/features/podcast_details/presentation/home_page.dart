@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/core/dependency_injection/service_locator.dart';
+import 'package:podcast_app/core/enums/image_size_enums.dart';
 import '../../auth/logic/auth_bloc.dart';
 import '../../auth/logic/auth_state.dart';
 import '../logic/podcast_list_cubit/podcast_list_cubit.dart';
@@ -82,9 +83,9 @@ class HomePage extends StatelessWidget {
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(12)),
-              child: podcast.imageUrl != null
+              child: podcast.getImageForSize(ImageSize.medium) != null
                   ? Image.network(
-                      podcast.imageUrl!,
+                      podcast.getImageForSize(ImageSize.medium)!,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: 120,

@@ -68,7 +68,6 @@ class VerificationPage extends StatelessWidget {
             CustomButton(
               label: 'Go to Login page',
               onPressed: () {
-                FirebaseAuth.instance.signOut();
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   '/login',

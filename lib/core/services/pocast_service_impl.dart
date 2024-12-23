@@ -4,10 +4,10 @@ import '../models/episode_model.dart';
 import '../models/podcast_model.dart';
 import 'abstract_podcast_service.dart';
 
-class SpotifyService implements ApiService {
+class PodcastServiceImpl implements PocastService {
   final TokenManagementService _tokenService;
 
-  SpotifyService(this._tokenService);
+  PodcastServiceImpl(this._tokenService);
 
   Future<String> _getAccessToken() async {
     return await _tokenService.getAccessToken();
@@ -20,6 +20,7 @@ class SpotifyService implements ApiService {
   }) async {
     try {
       String accessToken = await _getAccessToken();
+      print('access token: $accessToken');
 
       final response = await Dio().get(
         'https://api.spotify.com/v1/search',
@@ -61,6 +62,7 @@ class SpotifyService implements ApiService {
       final response = await Dio().get(
         'https://api.spotify.com/v1/shows/$showId/episodes',
         queryParameters: {
+          'market': 'US', // Add market parameter
           'limit': limit,
           'offset': offset,
         },
@@ -68,27 +70,22 @@ class SpotifyService implements ApiService {
           headers: {
             'Authorization': 'Bearer $accessToken',
           },
+          validateStatus: (status) => status! < 500,
         ),
       );
-      print('show id $showId');
-      // print('Response data: ${response.data}');
+
+      print('Episode API Response: ${response.data}');
 
       if (response.statusCode == 200) {
         final List<dynamic> items = response.data['items'];
-
-        return items.map((item) {
-          if (item is Map<String, dynamic>) {
-            return Episode.fromJson(item);
-          } else {
-            throw const FormatException('Invalid episode format');
-          }
-        }).toList();
+        return items.map((item) => Episode.fromJson(item)).toList();
       } else {
-        throw Exception('Failed to load episodes: ${response.data}');
+        throw Exception(
+            'Failed to load episodes: ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
       print('Error fetching episodes: $e');
-      return [];
+      rethrow;
     }
   }
 }

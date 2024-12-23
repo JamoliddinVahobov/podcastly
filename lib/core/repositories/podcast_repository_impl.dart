@@ -1,13 +1,13 @@
 import '../models/episode_model.dart';
 import '../models/podcast_model.dart';
-import '../services/spotify_service.dart';
+import '../services/pocast_service_impl.dart';
 import 'abstract_podcast_repository.dart';
 
 class PodcastRepositoryImpl implements PodcastRepository {
-  final SpotifyService _spotifyService;
+  final PodcastServiceImpl _spotifyService;
 
   const PodcastRepositoryImpl({
-    required SpotifyService spotifyService,
+    required PodcastServiceImpl spotifyService,
   }) : _spotifyService = spotifyService;
 
   @override

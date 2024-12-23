@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/core/models/episode_model.dart';
 import 'package:podcast_app/core/models/podcast_model.dart';
 import 'package:podcast_app/features/episode_player/presentation/fullscreen_player.dart';
-
+import '../../../core/enums/image_size_enums.dart';
 import '../logic/audio_player_bloc/audio_player_bloc.dart';
 
 class MiniPlayer extends StatelessWidget {
@@ -61,8 +61,9 @@ class MiniPlayer extends StatelessWidget {
   }
 
   Widget _buildEpisodeImage(Episode episode, Podcast podcast) {
-    String imageUrl = episode.imageUrl ?? podcast.imageUrl ?? '';
-
+    String imageUrl = episode.getImageForSize(ImageSize.small) ??
+        podcast.getImageForSize(ImageSize.small) ??
+        '';
     return imageUrl.isNotEmpty
         ? Image.network(
             imageUrl,
@@ -81,7 +82,7 @@ class MiniPlayer extends StatelessWidget {
       width: 64,
       height: 64,
       alignment: Alignment.center,
-      child: const Text('No Image', style: TextStyle(color: Colors.grey)),
+      child: const Text('No Image'),
     );
   }
 
@@ -129,13 +130,13 @@ class MiniPlayer extends StatelessWidget {
             final audioBloc = context.read<AudioPlayerBloc>();
             if (audioState.playerState == PlayerState.playing) {
               audioBloc.add(PauseEpisode(
-                audioUrl: episode.imageUrl!,
+                audioUrl: episode.audioUrl,
                 episode: episode,
                 podcast: podcast,
               ));
             } else if (audioState.playerState == PlayerState.paused) {
               audioBloc.add(ResumeEpisode(
-                audioUrl: episode.imageUrl!,
+                audioUrl: episode.audioUrl,
                 episode: episode,
                 podcast: podcast,
               ));
@@ -143,7 +144,7 @@ class MiniPlayer extends StatelessWidget {
               // This should not happen in MiniPlayer, but kept for completeness
 
               audioBloc.add(PlayEpisode(
-                audioUrl: episode.imageUrl!,
+                audioUrl: episode.audioUrl,
                 episode: episode,
                 podcast: podcast,
               ));

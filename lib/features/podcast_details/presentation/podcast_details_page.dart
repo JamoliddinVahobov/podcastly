@@ -7,6 +7,7 @@ import 'package:podcast_app/core/models/podcast_model.dart';
 import 'package:podcast_app/features/episode_player/presentation/fullscreen_player.dart';
 import 'package:podcast_app/features/episode_player/presentation/mini_player.dart';
 import 'package:podcast_app/core/utils/screen_size_utils.dart';
+import '../../../core/enums/image_size_enums.dart';
 import '../../episode_player/logic/audio_player_bloc/audio_player_bloc.dart';
 import '../logic/podcast_details_bloc/podcast_details_bloc.dart';
 import '../../../core/repositories/abstract_podcast_repository.dart';
@@ -44,7 +45,7 @@ class PodcastDetailsPage extends StatelessWidget {
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: NetworkImage(
-                                podcast.imageUrl ??
+                                podcast.getImageForSize(ImageSize.medium) ??
                                     'No image available for this podcast',
                               ),
                               fit: BoxFit.cover,
