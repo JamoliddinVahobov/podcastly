@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:podcast_app/features/auth/data/services/auth_service.dart';
 import 'package:podcast_app/firebase/firebase_options.dart';
 import 'package:podcast_app/features/episode_player/logic/audio_player_bloc/audio_player_bloc.dart';
 import 'package:podcast_app/features/auth/logic/auth_bloc.dart';
@@ -18,18 +19,19 @@ Future<void> main() async {
   );
   setupLocator();
   await dotenv.load();
-  runApp(const MyApp());
+  runApp(const PodcastApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class PodcastApp extends StatelessWidget {
+  const PodcastApp({super.key});
   @override
   Widget build(BuildContext context) {
+    final authService = AuthService(FirebaseAuth.instance);
     ScreenSize.init(context);
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AuthBloc(FirebaseAuth.instance),
+          create: (context) => AuthBloc(authService),
         ),
         BlocProvider(
           create: (context) => AudioPlayerBloc(),

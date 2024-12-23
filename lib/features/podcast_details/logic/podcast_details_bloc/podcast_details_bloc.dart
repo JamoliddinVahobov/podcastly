@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:podcast_app/core/models/podcast_model.dart';
 import '../../../../core/models/episode_model.dart';
 import '../../../../core/repositories/abstract_podcast_repository.dart';
@@ -33,7 +34,7 @@ class PodcastDetailsBloc
 
       final episodes = List<Episode>.from(
         episodesJson.map((episodeJson) {
-          print('Episode JSON: $episodeJson');
+          debugPrint('Episode JSON: $episodeJson');
           if (episodeJson is Map<String, dynamic>) {
             return Episode.fromJson(episodeJson as Map<String, dynamic>);
           }
@@ -52,7 +53,7 @@ class PodcastDetailsBloc
         isLoading: false,
         error: e.toString(),
       ));
-      print('Error loading podcast details: $e');
+      debugPrint('Error loading podcast details: $e');
     }
   }
 
@@ -91,7 +92,7 @@ class PodcastDetailsBloc
         error: e.toString(),
         isLoading: false,
       ));
-      print('Error loading more podcast episodes: $e');
+      debugPrint('Error loading more podcast episodes: $e');
     }
   }
 }

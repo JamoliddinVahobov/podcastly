@@ -10,7 +10,6 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final String? errorText;
   final String? validatorType;
-  // final String? Function(String?)? validator;
   final void Function(String)? onChanged;
 
   const CustomTextField({
@@ -23,7 +22,6 @@ class CustomTextField extends StatelessWidget {
     this.focusNode,
     this.suffixIcon,
     this.errorText,
-    // this.validator,
     this.onChanged,
     this.validatorType,
   });

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:podcast_app/features/auth/logic/auth_event.dart';
-
 import '../../logic/auth_bloc.dart';
 import '../../logic/auth_state.dart';
 import '../widgets/custom_button.dart';

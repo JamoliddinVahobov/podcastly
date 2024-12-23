@@ -2,9 +2,9 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:podcast_app/core/models/podcast_model.dart';
 import 'package:podcast_app/core/models/episode_model.dart';
-
 part 'audio_player_event.dart';
 part 'audio_player_state.dart';
 
@@ -57,7 +57,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         currentPodcast: event.podcast,
       ));
     } catch (e) {
-      print('Error playing episode: $e');
+      debugPrint('Error playing episode: $e');
     }
   }
 
@@ -74,7 +74,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         currentPodcast: event.podcast,
       ));
     } catch (e) {
-      print('Error going to the next episode: $e');
+      debugPrint('Error going to the next episode: $e');
     }
   }
 

@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/features/auth/logic/auth_bloc.dart';
 import 'package:podcast_app/features/auth/logic/auth_event.dart';
 import 'package:podcast_app/features/auth/logic/auth_state.dart';
-
 import '../../../../../core/helpers/helpers.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_text_field.dart';
+import '../widgets/auth_button.dart';
+import '../widgets/email_field.dart';
+import '../widgets/password_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,19 +27,24 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    passwordFocusNode.addListener(() {
-      setState(() {}); // Update UI when focus changes
-    });
+    passwordFocusNode.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
     passwordFocusNode.dispose();
     super.dispose();
   }
 
-  String? emailError;
-  String? passwordError;
+  void _handleLogin(BuildContext context) {
+    if (formKey.currentState!.validate()) {
+      final String email = emailController.text.trim();
+      final String password = passwordController.text.trim();
+      context.read<AuthBloc>().add(LoginRequested(email, password));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,26 +58,10 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/bottombar', (route) => false);
               } else if (state is AuthError) {
-                // Check for a general login error
-                if (state.source == 'login_error') {
-                  emailError = state.emailError;
-                  passwordError = state.passwordError;
-                  // Handle other generic error cases
-                  if (state.message ==
-                      'Something went wrong, please try again.') {
-                    Helpers.showSnackbar(
-                      'Something went wrong, please try again.',
-                      context,
-                    );
-                  }
-                }
-                // Handle timeout error
-                else if (state.source == 'login_timeout') {
-                  // Display a timeout-specific message to the user
-                  Helpers.showSnackbar(
-                    'The login request took too long. Please try again.',
-                    context,
-                  );
+                if (state.emailError == null &&
+                    state.passwordError == null &&
+                    state.message.isNotEmpty) {
+                  Helpers.showSnackbar(state.message, context);
                 }
               }
             },
@@ -82,61 +71,30 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomTextField(
+                    AuthEmailField(
                       controller: emailController,
-                      label: 'Email',
-                      hint: 'Enter your email here',
-                      keyboardType: TextInputType.emailAddress,
-                      errorText: emailError,
-                      validatorType: 'email',
+                      errorText: state is AuthError ? state.emailError : null,
                     ),
-                    CustomTextField(
+                    AuthPasswordField(
                       controller: passwordController,
-                      label: 'Password',
-                      hint: 'Enter your password here',
-                      obscureText: obscurePassword,
                       focusNode: passwordFocusNode,
-                      suffixIcon: passwordFocusNode.hasFocus
-                          ? IconButton(
-                              icon: Icon(
-                                obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  obscurePassword = !obscurePassword;
-                                });
-                              },
-                            )
-                          : null,
-                      errorText: passwordError,
-                      validatorType: 'password',
+                      obscurePassword: obscurePassword,
+                      onToggleVisibility: () {
+                        setState(() {
+                          obscurePassword = !obscurePassword;
+                        });
+                      },
+                      errorText:
+                          state is AuthError ? state.passwordError : null,
                     ),
-                    SizedBox(height: 20),
-                    if (state is AuthLoading)
-                      Center(
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.blue),
-                        ),
-                      )
-                    else
-                      CustomButton(
-                        label: 'Log in',
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            final String email = emailController.text.trim();
-                            final String password =
-                                passwordController.text.trim();
-                            context
-                                .read<AuthBloc>()
-                                .add(LoginRequested(email, password));
-                          }
-                        },
-                        colors: [Colors.blue.shade700, Colors.blue.shade600],
-                      ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    AuthButton(
+                      label: 'Log in',
+                      onPressed: () => _handleLogin(context),
+                      colors: [Colors.blue.shade700, Colors.blue.shade600],
+                      isLoading: state is AuthLoading,
+                    ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

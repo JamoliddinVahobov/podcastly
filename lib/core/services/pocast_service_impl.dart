@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:podcast_app/core/services/token_management_service.dart';
+import 'package:flutter/material.dart';
 import '../models/episode_model.dart';
 import '../models/podcast_model.dart';
 import 'abstract_podcast_service.dart';
+import 'token_management_service.dart';
 
 class PodcastServiceImpl implements PocastService {
   final TokenManagementService _tokenService;
@@ -20,7 +21,7 @@ class PodcastServiceImpl implements PocastService {
   }) async {
     try {
       String accessToken = await _getAccessToken();
-      print('access token: $accessToken');
+      debugPrint('access token: $accessToken');
 
       final response = await Dio().get(
         'https://api.spotify.com/v1/search',
@@ -45,7 +46,7 @@ class PodcastServiceImpl implements PocastService {
         throw Exception('Failed to load podcasts: ${response.data}');
       }
     } catch (e) {
-      print('Error fetching podcasts: $e');
+      debugPrint('Error fetching podcasts: $e');
       return [];
     }
   }
@@ -74,7 +75,7 @@ class PodcastServiceImpl implements PocastService {
         ),
       );
 
-      print('Episode API Response: ${response.data}');
+      debugPrint('Episode API Response: ${response.data}');
 
       if (response.statusCode == 200) {
         final List<dynamic> items = response.data['items'];
@@ -84,7 +85,7 @@ class PodcastServiceImpl implements PocastService {
             'Failed to load episodes: ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
-      print('Error fetching episodes: $e');
+      debugPrint('Error fetching episodes: $e');
       rethrow;
     }
   }

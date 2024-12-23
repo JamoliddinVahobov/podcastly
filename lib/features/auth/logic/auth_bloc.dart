@@ -1,216 +1,85 @@
-import 'dart:async';
-import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../auth_exceptions/auth_exceptions.dart';
+import '../data/services/auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final FirebaseAuth _auth;
-  final timeoutDuration = const Duration(seconds: 20);
-  AuthBloc(this._auth) : super(AuthInitial()) {
-    // Handling signup
+  final AuthService _authService;
+
+  AuthBloc(this._authService) : super(AuthInitial()) {
     on<SignupRequested>((event, emit) async {
       emit(AuthLoading());
       try {
-        // Use Future.timeout to wrap the signup operation
-        UserCredential userCredential = await _auth
-            .createUserWithEmailAndPassword(
-          email: event.email,
-          password: event.password,
-        )
-            .timeout(timeoutDuration, onTimeout: () {
-          throw TimeoutException('Signup request timed out');
-        });
-
-        final User? user = userCredential.user;
-        if (user != null) {
-          await user.updateDisplayName(event.username);
-          await user.sendEmailVerification();
-          emit(EmailVerificationRequired(user));
-        } else {
-          emit(AuthError(
-            message: 'Something went wrong, please try again.',
-            source: 'signup_error',
-          ));
-        }
-      } on TimeoutException catch (_) {
+        final user = await _authService.signup(
+          event.email,
+          event.password,
+          event.username,
+        );
+        emit(EmailVerificationRequired(user));
+      } on SignupException catch (e) {
         emit(AuthError(
-          message: 'The signup request took too long. Please try again.',
-          source: 'signup_timeout',
-        ));
-      } on FirebaseAuthException catch (e) {
-        String? emailError;
-        String? passwordError;
-        String? usernameError;
-        String? message;
-
-        switch (e.code) {
-          case 'weak-password':
-            passwordError = 'The password provided is too weak.';
-            message = passwordError;
-            break;
-          case 'email-already-in-use':
-            emailError = 'An account already exists with this email.';
-            message = emailError;
-            break;
-          case 'invalid-email':
-            emailError = 'This email address is not valid.';
-            message = emailError;
-            break;
-          case 'too-many-requests':
-            message = 'Too many requests. Please try again later.';
-          case 'invalid-display-name':
-            usernameError = 'The username is invalid.';
-            message = usernameError;
-            break;
-          default:
-            message = 'Something went wrong, please try again.';
-            break;
-        }
-        emit(AuthError(
-          emailError: emailError,
-          passwordError: passwordError,
-          usernameError: usernameError,
-          message: message,
+          emailError: e.emailError,
+          passwordError: e.passwordError,
+          usernameError: e.usernameError,
+          message: e.message,
           source: 'signup_error',
         ));
-      } catch (e) {
-        emit(AuthError(
-          message: 'Something went wrong, please try again.',
-          source: 'signup_error',
-        ));
+      } on AuthException catch (e) {
+        emit(AuthError(message: e.message, source: 'signup_error'));
       }
     });
 
-    // Handling login
     on<LoginRequested>((event, emit) async {
       emit(AuthLoading());
       try {
-        // Validate fields before making request
         if (event.email.isEmpty || event.password.isEmpty) {
-          emit(AuthError(
-            message: 'Email and password cannot be empty.',
-            source: 'login_error',
-          ));
-          return;
+          throw const AuthException('Email and password cannot be empty');
         }
-
-        // Perform login
-        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: event.email,
-          password: event.password,
-        );
-        final User? user = userCredential.user;
-        if (user != null && user.emailVerified) {
-          emit(AuthenticatedUser(user));
-        } else {
-          emit(AuthError(
-            message: 'User is not verified or does not exist.',
-            source: 'login_error',
-          ));
-        }
-      } on FirebaseAuthException catch (e) {
-        String? emailError;
-        String? passwordError;
-        String? message;
-
-        switch (e.code) {
-          case 'user-not-found':
-            emailError = 'No user found with this email.';
-            message = emailError;
-            break;
-          case 'wrong-password':
-            passwordError = 'Incorrect password.';
-            message = passwordError;
-            break;
-          case 'invalid-email':
-            emailError = 'This email address is not valid.';
-            message = emailError;
-            break;
-          case 'too-many-requests':
-            message = 'Too many requests. Please try again later.';
-            break;
-          case 'network-request-failed':
-            message = 'Network error, please check your connection.';
-            break;
-          default:
-            message = 'Something went wrong, please try again.';
-            break;
-        }
+        final user = await _authService.login(event.email, event.password);
+        emit(AuthenticatedUser(user));
+      } on LoginException catch (e) {
         emit(AuthError(
-          emailError: emailError,
-          passwordError: passwordError,
-          message: message,
+          emailError: e.emailError,
+          passwordError: e.passwordError,
+          message: e.message,
           source: 'login_error',
         ));
-      } on TimeoutException catch (_) {
-        emit(AuthError(
-          message: 'The login request took too long. Please try again.',
-          source: 'login_timeout',
-        ));
-      } catch (e) {
-        emit(AuthError(
-          message: 'Something went wrong, please try again.',
-          source: 'login_error',
-        ));
+      } on AuthException catch (e) {
+        emit(AuthError(message: e.message, source: 'login_error'));
       }
     });
 
     on<ResendVerificationEmail>((event, emit) async {
       emit(AuthLoading());
       try {
-        await event.user.sendEmailVerification();
+        await _authService.resendVerificationEmail(event.user);
         emit(EmailResent(message: "Verification email has been resent."));
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'too-many-requests') {
-          emit(AuthError(
-            message: 'You have made too many requests. Please try again later.',
-            source: 'resend_verification_error',
-          ));
-        } else {
-          emit(AuthError(
-            message: 'Failed to resend verification email. Please try again.',
-            source: 'resend_verification_error',
-          ));
-        }
-      } catch (e) {
+      } on AuthException catch (e) {
         emit(AuthError(
-          message: 'An unexpected error occurred. Please try again later.',
+          message: e.message,
           source: 'resend_verification_error',
         ));
       }
     });
 
-    // Handling logout
     on<LogoutRequested>((event, emit) async {
       try {
-        await _auth.signOut();
+        await _authService.logout();
         emit(UnauthenticatedUser());
-      } catch (e) {
-        print('error is logout: $e');
-        emit(AuthError(
-          message: 'Something went wrong, please try again.',
-          source: 'logout_error',
-        ));
+      } on AuthException catch (e) {
+        emit(AuthError(message: e.message, source: 'logout_error'));
       }
     });
 
-    // Checking authentication
     on<AuthCheckRequested>((event, emit) async {
       emit(AuthLoading());
-      final User? user = _auth.currentUser;
-      if (user != null) {
-        try {
-          await user.getIdToken();
-          emit(AuthenticatedUser(user));
-        } catch (e) {
-          emit(AuthError(
-            message: 'Failed to retrieve authentication token.',
-            source: 'auth_check_error',
-          ));
-        }
-      } else {
-        emit(UnauthenticatedUser());
+      try {
+        final user = await _authService.checkAuthStatus();
+        emit(user != null ? AuthenticatedUser(user) : UnauthenticatedUser());
+      } on AuthException catch (e) {
+        emit(AuthError(message: e.message, source: 'auth_check_error'));
       }
     });
   }
