@@ -7,7 +7,6 @@ class AudioPlayerState extends Equatable {
   final Duration currentPosition;
   final Duration? totalDuration;
   final Episode? nextEpisode;
-  final bool? isMiniPlayerDismissed;
 
   const AudioPlayerState({
     this.playerState = PlayerState.stopped,
@@ -16,7 +15,6 @@ class AudioPlayerState extends Equatable {
     this.currentPosition = Duration.zero,
     this.totalDuration,
     this.nextEpisode,
-    this.isMiniPlayerDismissed = false,
   });
 
   AudioPlayerState copyWith({
@@ -27,7 +25,6 @@ class AudioPlayerState extends Equatable {
     Duration? totalDuration,
     Episode? nextEpisode,
     Episode? previousEpisode,
-    bool? isMiniPlayerDismissed,
   }) {
     return AudioPlayerState(
       playerState: playerState ?? this.playerState,
@@ -36,8 +33,6 @@ class AudioPlayerState extends Equatable {
       currentPosition: currentPosition ?? this.currentPosition,
       totalDuration: totalDuration ?? this.totalDuration,
       nextEpisode: nextEpisode ?? this.nextEpisode,
-      isMiniPlayerDismissed:
-          isMiniPlayerDismissed ?? this.isMiniPlayerDismissed,
     );
   }
 
@@ -51,6 +46,5 @@ class AudioPlayerState extends Equatable {
         currentPosition,
         totalDuration,
         nextEpisode,
-        isMiniPlayerDismissed,
       ];
 }

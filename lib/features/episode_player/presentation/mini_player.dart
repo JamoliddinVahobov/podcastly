@@ -161,14 +161,6 @@ class MiniPlayer extends StatelessWidget {
                 );
           },
         ),
-        IconButton(
-          onPressed: () {
-            context.read<AudioPlayerBloc>().add(
-                  DismissMiniPlayer(),
-                );
-          },
-          icon: const Icon(Icons.cancel),
-        ),
       ],
     );
   }

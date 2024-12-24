@@ -1,4 +1,4 @@
-import 'exception_enums.dart';
+import 'enums.dart';
 
 extension AuthErrorCodeX on AuthErrorCode {
   static AuthErrorCode fromString(String code) {

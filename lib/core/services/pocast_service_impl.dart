@@ -63,7 +63,7 @@ class PodcastServiceImpl implements PocastService {
       final response = await Dio().get(
         'https://api.spotify.com/v1/shows/$showId/episodes',
         queryParameters: {
-          'market': 'US', // Add market parameter
+          'market': 'US',
           'limit': limit,
           'offset': offset,
         },
@@ -78,8 +78,23 @@ class PodcastServiceImpl implements PocastService {
       debugPrint('Episode API Response: ${response.data}');
 
       if (response.statusCode == 200) {
-        final List<dynamic> items = response.data['items'];
-        return items.map((item) => Episode.fromJson(item)).toList();
+        final List<dynamic> items = response.data['items'] as List<dynamic>;
+
+        // Filter out null items and map valid ones to Episode objects
+        return items
+            .where((item) => item != null) // Remove null items
+            .map((item) {
+              try {
+                return Episode.fromJson(item as Map<String, dynamic>);
+              } catch (e) {
+                debugPrint('Error parsing episode: $e');
+                debugPrint('Problem episode data: $item');
+                return null;
+              }
+            })
+            .where((episode) => episode != null)
+            .cast<Episode>()
+            .toList();
       } else {
         throw Exception(
             'Failed to load episodes: ${response.statusCode} - ${response.data}');

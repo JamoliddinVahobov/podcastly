@@ -115,5 +115,3 @@ class UpdatePlaybackDuration extends AudioPlayerEvent {
   @override
   List<Object?> get props => [duration];
 }
-
-class DismissMiniPlayer extends AudioPlayerEvent {}

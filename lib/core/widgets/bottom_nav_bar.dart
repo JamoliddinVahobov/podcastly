@@ -5,6 +5,7 @@ import '../../features/podcast_details/presentation/home_page.dart';
 import '../../features/episode_player/presentation/mini_player.dart';
 import '../../features/search_podcasts/presentation/search_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
+import '../../features/subscriptions/presentation/subscriptions_page.dart';
 
 class TheBottomBar extends StatefulWidget {
   const TheBottomBar({super.key});
@@ -21,6 +22,7 @@ class TheBottomBarState extends State<TheBottomBar>
   final List<Widget> _pages = [
     const HomePage(),
     const SearchPage(),
+    const SubscriptionsPage(),
     const SettingsPage(),
   ];
 
@@ -91,7 +93,11 @@ class TheBottomBarState extends State<TheBottomBar>
                 label: 'Search',
               ),
               BottomNavigationBarItem(
-                icon: _buildFlippingIcon(2, Icons.settings),
+                icon: _buildFlippingIcon(2, Icons.subscriptions),
+                label: 'Subscriptions',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildFlippingIcon(3, Icons.settings),
                 label: 'Settings',
               ),
             ],

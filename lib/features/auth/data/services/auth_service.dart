@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../auth_exceptions/auth_exceptions.dart';
-import '../../auth_exceptions/exception_extension.dart';
+import '../../auth_exceptions/extension.dart';
 import '../../auth_exceptions/exception_messages.dart';
 
 class AuthService {

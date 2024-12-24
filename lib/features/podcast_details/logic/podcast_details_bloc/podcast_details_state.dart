@@ -4,17 +4,17 @@ class PodcastDetailsState extends Equatable {
   final Podcast podcast;
   final List<Episode> episodes;
   final bool isLoading;
-  final String? error;
   final bool hasReachedMax;
   final int? currentOffset;
+  final String? error;
 
   const PodcastDetailsState({
     required this.podcast,
     this.episodes = const [],
     this.isLoading = false,
-    this.error,
     this.hasReachedMax = false,
-    this.currentOffset,
+    this.currentOffset = 0,
+    this.error,
   });
 
   PodcastDetailsState copyWith({
@@ -29,7 +29,7 @@ class PodcastDetailsState extends Equatable {
       podcast: podcast ?? this.podcast,
       episodes: episodes ?? this.episodes,
       isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      error: error,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       currentOffset: currentOffset ?? this.currentOffset,
     );

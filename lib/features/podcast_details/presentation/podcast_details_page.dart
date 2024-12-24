@@ -40,8 +40,8 @@ class PodcastDetailsPage extends StatelessWidget {
                           top: ScreenSize.screenHeight * 0.04,
                         ),
                         child: Container(
-                          height: 200,
-                          width: 200,
+                          height: ScreenSize.screenHeight * 0.25,
+                          width: ScreenSize.screenWidth * 0.55,
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: NetworkImage(
@@ -222,8 +222,7 @@ class PodcastDetailsPage extends StatelessWidget {
             ),
             BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
               builder: (context, audioState) {
-                if (audioState.currentEpisode != null &&
-                    audioState.isMiniPlayerDismissed != false) {
+                if (audioState.currentEpisode != null) {
                   return const Positioned(
                     left: 0,
                     right: 0,

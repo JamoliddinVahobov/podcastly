@@ -1,6 +1,6 @@
 // auth_error_messages.dart
 
-import 'exception_enums.dart';
+import 'enums.dart';
 
 class AuthErrorMessages {
   static String getMessage(AuthErrorCode code) {
