@@ -1,8 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/core/models/episode_model.dart';
-import 'package:podcast_app/core/models/podcast_model.dart';
+import 'package:podcast_app/features/episode_details/data/models/episode_model.dart';
+import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
 import 'package:podcast_app/features/episode_player/presentation/fullscreen_player.dart';
 import '../../../core/enums/image_size_enums.dart';
 import '../logic/audio_player_bloc/audio_player_bloc.dart';
@@ -36,7 +36,7 @@ class MiniPlayer extends StatelessWidget {
                 color: Theme.of(context).cardColor,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, -2),
                   ),

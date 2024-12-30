@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:podcast_app/core/models/podcast_model.dart';
-import '../../../../core/models/episode_model.dart';
-import '../../../../core/repositories/abstract_podcast_repository.dart';
+import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
+import '../../../../episode_details/data/models/episode_model.dart';
+import '../../../domain/repositories/podcast_repository.dart';
 part 'podcast_details_event.dart';
 part 'podcast_details_state.dart';
 

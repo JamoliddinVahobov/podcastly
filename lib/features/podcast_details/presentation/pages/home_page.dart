@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/core/dependency_injection/service_locator.dart';
 import 'package:podcast_app/core/enums/image_size_enums.dart';
-import '../../auth/logic/auth_bloc.dart';
-import '../../auth/logic/auth_state.dart';
-import '../logic/podcast_list_cubit/podcast_list_cubit.dart';
-import '../../../core/models/podcast_model.dart';
-import '../../../core/repositories/abstract_podcast_repository.dart';
+import '../../../auth/logic/auth_bloc.dart';
+import '../../../auth/logic/auth_state.dart';
+import '../providers/podcast_list_cubit/podcast_list_cubit.dart';
+import '../../data/models/podcast_model.dart';
+import '../../domain/repositories/podcast_repository.dart';
 import 'podcast_details_page.dart';
 
 class HomePage extends StatelessWidget {

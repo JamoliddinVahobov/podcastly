@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/episode_player/logic/audio_player_bloc/audio_player_bloc.dart';
-import '../../features/podcast_details/presentation/home_page.dart';
+import '../../features/podcast_details/presentation/pages/home_page.dart';
 import '../../features/episode_player/presentation/mini_player.dart';
 import '../../features/search_podcasts/presentation/search_page.dart';
 import '../../features/settings/presentation/settings_page.dart';

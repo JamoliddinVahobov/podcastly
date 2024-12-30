@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:podcast_app/features/podcast_details/presentation/home_page.dart';
+import 'package:podcast_app/features/podcast_details/presentation/pages/home_page.dart';
 import '../../features/auth/presentation/pages/auth_check_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/signup_page.dart';
