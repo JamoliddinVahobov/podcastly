@@ -1,16 +1,16 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/core/dependency_injection/service_locator.dart';
+import 'package:podcast_app/core/dependency_injection/dependency_injection.dart';
 import 'package:podcast_app/features/episode_details/data/models/episode_model.dart';
+import 'package:podcast_app/features/episode_details/domain/usecases/episode_usecase.dart';
 import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
 import 'package:podcast_app/features/episode_player/presentation/fullscreen_player.dart';
 import 'package:podcast_app/features/episode_player/presentation/mini_player.dart';
 import 'package:podcast_app/core/utils/screen_size_utils.dart';
 import '../../../../core/enums/image_size_enums.dart';
 import '../../../episode_player/logic/audio_player_bloc/audio_player_bloc.dart';
-import '../providers/podcast_details_bloc/podcast_details_bloc.dart';
-import '../../domain/repositories/podcast_repository.dart';
+import '../../../episode_details/presentation/providers/episode_provider_bloc/episode_provider_bloc.dart';
 
 class PodcastDetailsPage extends StatelessWidget {
   final Podcast podcast;
@@ -19,11 +19,12 @@ class PodcastDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final podcastRepository = getIt<PodcastRepository>();
+    final episodesUsecase = getIt<FetchEpisodesUsecase>();
     return BlocProvider(
-      create: (context) =>
-          PodcastDetailsBloc(podcast, repository: podcastRepository)
-            ..add(LoadPodcastDetails(podcast.id)),
+      create: (context) => EpisodeProviderBloc(
+        podcast,
+        episodesUsecase: episodesUsecase,
+      )..add(LoadEpisodes(podcast.id)),
       child: Scaffold(
         body: Stack(
           children: [
@@ -125,7 +126,7 @@ class PodcastDetailsPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                BlocBuilder<PodcastDetailsBloc, PodcastDetailsState>(
+                BlocBuilder<EpisodeProviderBloc, EpisodeProviderState>(
                   builder: (context, state) {
                     return SliverList.builder(
                       itemCount: state.hasReachedMax
@@ -134,7 +135,7 @@ class PodcastDetailsPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         if (index == state.episodes.length) {
                           context
-                              .read<PodcastDetailsBloc>()
+                              .read<EpisodeProviderBloc>()
                               .add(LoadMoreEpisodes(podcast.id));
                           return const Center(
                               child: CircularProgressIndicator());

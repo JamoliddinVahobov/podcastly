@@ -1,31 +1,31 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:podcast_app/features/episode_details/domain/usecases/episode_usecase.dart';
 import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
-import '../../../../episode_details/data/models/episode_model.dart';
-import '../../../domain/repositories/podcast_repository.dart';
-part 'podcast_details_event.dart';
-part 'podcast_details_state.dart';
+import '../../../data/models/episode_model.dart';
+part 'episode_provider_event.dart';
+part 'episode_provider_state.dart';
 
-class PodcastDetailsBloc
-    extends Bloc<PodcastDetailsEvent, PodcastDetailsState> {
-  final PodcastRepository _repository;
+class EpisodeProviderBloc
+    extends Bloc<EpisodeProviderEvent, EpisodeProviderState> {
+  final FetchEpisodesUsecase _episodesUsecase;
   final int _limit = 21;
 
-  PodcastDetailsBloc(
-    Podcast initialPodcasts, {
-    required PodcastRepository repository,
-  })  : _repository = repository,
-        super(PodcastDetailsState(
-          podcast: initialPodcasts,
+  EpisodeProviderBloc(
+    Podcast podcast, {
+    required FetchEpisodesUsecase episodesUsecase,
+  })  : _episodesUsecase = episodesUsecase,
+        super(EpisodeProviderState(
+          podcast: podcast,
           currentOffset: 0,
         )) {
-    on<LoadPodcastDetails>(_onLoadPodcastDetails);
+    on<LoadEpisodes>(_onLoadInitialEpisodes);
     on<LoadMoreEpisodes>(_onLoadMoreEpisodes);
   }
 
-  Future<void> _onLoadPodcastDetails(
-      LoadPodcastDetails event, Emitter<PodcastDetailsState> emit) async {
+  Future<void> _onLoadInitialEpisodes(
+      LoadEpisodes event, Emitter<EpisodeProviderState> emit) async {
     if (state.isLoading) return;
 
     emit(state.copyWith(
@@ -38,7 +38,7 @@ class PodcastDetailsBloc
       debugPrint('Fetching episodes for podcast ID: ${event.podcastId}');
       debugPrint('Using offset: , limit: $_limit');
       // The repository already returns List<Episode>, so we don't need to parse it again
-      final episodes = await _repository.fetchEpisodes(
+      final episodes = await _episodesUsecase.fetchEpisodes(
         event.podcastId,
         offset: 0,
         limit: _limit,
@@ -66,7 +66,7 @@ class PodcastDetailsBloc
   }
 
   Future<void> _onLoadMoreEpisodes(
-      LoadMoreEpisodes event, Emitter<PodcastDetailsState> emit) async {
+      LoadMoreEpisodes event, Emitter<EpisodeProviderState> emit) async {
     if (state.hasReachedMax || state.isLoading) return;
 
     emit(state.copyWith(isLoading: true, error: null));
@@ -76,7 +76,7 @@ class PodcastDetailsBloc
       debugPrint('Current offset: ${state.currentOffset}');
 
       // The repository already returns List<Episode>, so we don't need to parse it again
-      final moreEpisodes = await _repository.fetchEpisodes(
+      final moreEpisodes = await _episodesUsecase.fetchEpisodes(
         event.podcastId,
         offset: state.currentOffset ?? 0,
         limit: _limit,

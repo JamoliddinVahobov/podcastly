@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/core/dependency_injection/service_locator.dart';
+import 'package:podcast_app/core/dependency_injection/dependency_injection.dart';
 import 'package:podcast_app/core/enums/image_size_enums.dart';
+import 'package:podcast_app/features/podcast_details/domain/usecases/podcast_usecase.dart';
 import '../../../auth/logic/auth_bloc.dart';
 import '../../../auth/logic/auth_state.dart';
-import '../providers/podcast_list_cubit/podcast_list_cubit.dart';
+import '../providers/podcast_provider_cubit/podcast_provider_cubit.dart';
 import '../../data/models/podcast_model.dart';
-import '../../domain/repositories/podcast_repository.dart';
 import 'podcast_details_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -14,10 +14,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final podcastRepository = getIt<PodcastRepository>();
+    final podcastUsecase = getIt<FetchPodcastsUsecase>();
     return BlocProvider(
-      create: (context) => PodcastListCubit(repository: podcastRepository)
-        ..loadInitialPodcasts(),
+      create: (context) => PodcastProviderCubit(
+        fetchPodcastsUsecase: podcastUsecase,
+      )..loadInitialPodcasts(),
       child: Scaffold(
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
@@ -29,11 +30,11 @@ class HomePage extends StatelessWidget {
               );
             }
           },
-          child: BlocBuilder<PodcastListCubit, PodcastListState>(
+          child: BlocBuilder<PodcastProviderCubit, PodcastProviderState>(
             builder: (context, state) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  await context.read<PodcastListCubit>().refreshPodcasts();
+                  await context.read<PodcastProviderCubit>().refreshPodcasts();
                 },
                 child: GridView.builder(
                   padding: const EdgeInsets.all(16),
@@ -47,7 +48,7 @@ class HomePage extends StatelessWidget {
                       state.podcasts.length + (state.hasReachedMax ? 0 : 1),
                   itemBuilder: (context, index) {
                     if (index >= state.podcasts.length) {
-                      context.read<PodcastListCubit>().loadMorePodcasts();
+                      context.read<PodcastProviderCubit>().loadMorePodcasts();
                       return const Align(
                         alignment: Alignment.center,
                         child: CircularProgressIndicator(),

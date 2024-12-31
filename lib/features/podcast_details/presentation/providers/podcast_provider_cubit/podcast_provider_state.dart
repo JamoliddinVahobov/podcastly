@@ -1,22 +1,22 @@
-part of 'podcast_list_cubit.dart';
+part of 'podcast_provider_cubit.dart';
 
-class PodcastListState extends Equatable {
+class PodcastProviderState extends Equatable {
   final List<Podcast> podcasts;
   final bool hasReachedMax;
   final bool isLoading;
 
-  const PodcastListState({
+  const PodcastProviderState({
     this.podcasts = const [],
     this.hasReachedMax = false,
     this.isLoading = false,
   });
 
-  PodcastListState copyWith({
+  PodcastProviderState copyWith({
     List<Podcast>? podcasts,
     bool? hasReachedMax,
     bool? isLoading,
   }) {
-    return PodcastListState(
+    return PodcastProviderState(
       podcasts: podcasts ?? this.podcasts,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isLoading: isLoading ?? this.isLoading,

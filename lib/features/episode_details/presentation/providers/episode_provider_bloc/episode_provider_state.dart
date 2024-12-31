@@ -1,6 +1,6 @@
-part of 'podcast_details_bloc.dart';
+part of 'episode_provider_bloc.dart';
 
-class PodcastDetailsState extends Equatable {
+class EpisodeProviderState extends Equatable {
   final Podcast podcast;
   final List<Episode> episodes;
   final bool isLoading;
@@ -8,7 +8,7 @@ class PodcastDetailsState extends Equatable {
   final int? currentOffset;
   final String? error;
 
-  const PodcastDetailsState({
+  const EpisodeProviderState({
     required this.podcast,
     this.episodes = const [],
     this.isLoading = false,
@@ -17,7 +17,7 @@ class PodcastDetailsState extends Equatable {
     this.error,
   });
 
-  PodcastDetailsState copyWith({
+  EpisodeProviderState copyWith({
     Podcast? podcast,
     List<Episode>? episodes,
     bool? isLoading,
@@ -25,7 +25,7 @@ class PodcastDetailsState extends Equatable {
     bool? hasReachedMax,
     int? currentOffset,
   }) {
-    return PodcastDetailsState(
+    return EpisodeProviderState(
       podcast: podcast ?? this.podcast,
       episodes: episodes ?? this.episodes,
       isLoading: isLoading ?? this.isLoading,

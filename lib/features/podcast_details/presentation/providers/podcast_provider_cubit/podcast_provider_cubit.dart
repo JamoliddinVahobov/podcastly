@@ -2,18 +2,18 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
-import '../../../domain/repositories/podcast_repository.dart';
-part 'podcast_list_state.dart';
+import '../../../domain/usecases/podcast_usecase.dart';
+part 'podcast_provider_state.dart';
 
-class PodcastListCubit extends Cubit<PodcastListState> {
-  final PodcastRepository _repository;
+class PodcastProviderCubit extends Cubit<PodcastProviderState> {
+  final FetchPodcastsUsecase _fetchPodcastsUsecase;
   final int _limit = 21;
   int _offset = 0;
 
-  PodcastListCubit({
-    required PodcastRepository repository,
-  })  : _repository = repository,
-        super(const PodcastListState());
+  PodcastProviderCubit({
+    required FetchPodcastsUsecase fetchPodcastsUsecase,
+  })  : _fetchPodcastsUsecase = fetchPodcastsUsecase,
+        super(const PodcastProviderState());
 
   Future<void> loadInitialPodcasts() async {
     if (state.isLoading) return;
@@ -21,12 +21,12 @@ class PodcastListCubit extends Cubit<PodcastListState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      final podcasts = await _repository.fetchPodcasts(
+      final podcasts = await _fetchPodcastsUsecase.fetchPodcasts(
         offset: 0,
         limit: _limit,
       );
 
-      emit(PodcastListState(
+      emit(PodcastProviderState(
         podcasts: podcasts,
         hasReachedMax: podcasts.length < _limit,
         isLoading: false,
@@ -46,7 +46,7 @@ class PodcastListCubit extends Cubit<PodcastListState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      final morePodcasts = await _repository.fetchPodcasts(
+      final morePodcasts = await _fetchPodcastsUsecase.fetchPodcasts(
         offset: _offset,
         limit: _limit,
       );
@@ -71,7 +71,7 @@ class PodcastListCubit extends Cubit<PodcastListState> {
 
   Future<void> refreshPodcasts() async {
     _offset = 0;
-    emit(const PodcastListState());
+    emit(const PodcastProviderState());
     await loadInitialPodcasts();
   }
 }

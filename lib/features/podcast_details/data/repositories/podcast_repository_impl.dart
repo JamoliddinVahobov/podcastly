@@ -1,6 +1,6 @@
-import '../../../features/podcast_details/data/models/podcast_model.dart';
-import '../../../features/podcast_details/data/datasources/remote_podcast_source.dart';
-import '../../../features/podcast_details/domain/repositories/podcast_repository.dart';
+import '../models/podcast_model.dart';
+import '../datasources/remote_podcast_source.dart';
+import '../../domain/repositories/podcast_repository.dart';
 
 class PodcastRepositoryImpl implements PodcastRepository {
   final RemotePodcastSource _remotePodcastSource;
