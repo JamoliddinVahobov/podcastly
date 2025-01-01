@@ -24,12 +24,11 @@ class AudioPlayerState extends Equatable {
     Duration? currentPosition,
     Duration? totalDuration,
     Episode? nextEpisode,
-    Episode? previousEpisode,
   }) {
     return AudioPlayerState(
       playerState: playerState ?? this.playerState,
-      currentEpisode: currentEpisode ?? this.currentEpisode,
       currentPodcast: currentPodcast ?? this.currentPodcast,
+      currentEpisode: currentEpisode ?? this.currentEpisode,
       currentPosition: currentPosition ?? this.currentPosition,
       totalDuration: totalDuration ?? this.totalDuration,
       nextEpisode: nextEpisode ?? this.nextEpisode,

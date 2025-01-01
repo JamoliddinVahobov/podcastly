@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
+import 'package:podcast_app/features/podcast_details/domain/entities/podcast_entity.dart';
 import '../../../domain/usecases/podcast_usecase.dart';
 part 'podcast_provider_state.dart';
 

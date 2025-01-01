@@ -1,61 +1,45 @@
-import 'package:podcast_app/core/mixins/image_size_mixin.dart';
+import '../../../../core/enums/image_size_enums.dart';
+import '../../../../core/utils/image_handler.dart';
+import '../../domain/entities/podcast_entity.dart';
 
-class Podcast with ImageHandlingMixin {
+class PodcastModel {
   final String id;
   final String name;
   final String publisher;
   final String? description;
-  @override
-  final String? smallImageUrl; // 64x64
-  @override
-  final String? mediumImageUrl; // 300x300
-  @override
-  final String? largeImageUrl; // 640x640
+  final ImageHandler imageHandler;
 
-  Podcast({
+  PodcastModel({
     required this.id,
     required this.name,
     required this.publisher,
     this.description,
-    this.smallImageUrl,
-    this.mediumImageUrl,
-    this.largeImageUrl,
+    required this.imageHandler,
   });
 
-  factory Podcast.fromJson(Map<String, dynamic> json) {
-    String? smallImageUrl;
-    String? mediumImageUrl;
-    String? largeImageUrl;
-
-    if (json['images'] != null &&
-        json['images'] is List &&
-        (json['images'] as List).isNotEmpty) {
-      final images = json['images'] as List<dynamic>;
-
-      // Find images for each size
-      smallImageUrl = images.firstWhere(
-        (image) => image['height'] == 64,
-        orElse: () => {'url': null},
-      )['url'] as String?;
-
-      mediumImageUrl = images.firstWhere(
-        (image) => image['height'] == 300,
-        orElse: () => {'url': null},
-      )['url'] as String?;
-
-      largeImageUrl = images.firstWhere(
-        (image) => image['height'] == 640,
-        orElse: () => {'url': null},
-      )['url'] as String?;
-    }
-    return Podcast(
-      id: json['id'],
-      name: json['name'],
-      publisher: json['publisher'],
-      description: json['description'] ?? '',
-      smallImageUrl: smallImageUrl,
-      mediumImageUrl: mediumImageUrl,
-      largeImageUrl: largeImageUrl,
+  factory PodcastModel.fromJson(Map<String, dynamic> json) {
+    return PodcastModel(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? 'Untitled Podcast',
+      publisher: json['publisher'] as String? ?? '',
+      description: json['description'] as String?,
+      imageHandler: ImageHandler.fromJson(json['images'] as List<dynamic>?),
     );
+  }
+
+  Podcast toEntity() {
+    return Podcast(
+      id: id,
+      name: name,
+      publisher: publisher,
+      description: description,
+      smallImageUrl: imageHandler.smallImageUrl,
+      mediumImageUrl: imageHandler.mediumImageUrl,
+      largeImageUrl: imageHandler.largeImageUrl,
+    );
+  }
+
+  String? getImageForSize(ImageSize size) {
+    return imageHandler.getImageForSize(size);
   }
 }

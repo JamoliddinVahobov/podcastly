@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:podcast_app/features/episode_details/domain/usecases/episode_usecase.dart';
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
-import '../../../data/models/episode_model.dart';
+import '../../../../podcast_details/domain/entities/podcast_entity.dart';
+import '../../../domain/entities/episode_entity.dart';
 part 'episode_provider_event.dart';
 part 'episode_provider_state.dart';
 

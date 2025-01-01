@@ -1,13 +1,13 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:podcast_app/core/dependency_injection/dependency_injection.dart';
-import 'package:podcast_app/features/episode_details/data/models/episode_model.dart';
 import 'package:podcast_app/features/episode_details/domain/usecases/episode_usecase.dart';
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
 import 'package:podcast_app/features/episode_player/presentation/fullscreen_player.dart';
 import 'package:podcast_app/features/episode_player/presentation/mini_player.dart';
 import 'package:podcast_app/core/utils/screen_size_utils.dart';
+import 'package:podcast_app/features/podcast_details/domain/entities/podcast_entity.dart';
 import '../../../../core/enums/image_size_enums.dart';
 import '../../../episode_player/logic/audio_player_bloc/audio_player_bloc.dart';
 import '../../../episode_details/presentation/providers/episode_provider_bloc/episode_provider_bloc.dart';
@@ -47,7 +47,7 @@ class PodcastDetailsPage extends StatelessWidget {
                             image: DecorationImage(
                               image: NetworkImage(
                                 podcast.getImageForSize(ImageSize.medium) ??
-                                    'No image available for this podcast',
+                                    'No image for this podcast',
                               ),
                               fit: BoxFit.cover,
                             ),
@@ -109,7 +109,8 @@ class PodcastDetailsPage extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: podcast.description ?? '',
+                                text: podcast.description ??
+                                    'No description for this podcast',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.black,
@@ -134,18 +135,16 @@ class PodcastDetailsPage extends StatelessWidget {
                           : state.episodes.length + 1,
                       itemBuilder: (context, index) {
                         if (index == state.episodes.length) {
-                          context
-                              .read<EpisodeProviderBloc>()
-                              .add(LoadMoreEpisodes(podcast.id));
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            context
+                                .read<EpisodeProviderBloc>()
+                                .add(LoadMoreEpisodes(podcast.id));
+                          });
                           return const Center(
                               child: CircularProgressIndicator());
                         }
 
                         final episode = state.episodes[index];
-                        final Episode? nextEpisode =
-                            index + 1 < state.episodes.length
-                                ? state.episodes[index + 1]
-                                : null;
 
                         return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
                           builder: (context, audioState) {
@@ -204,7 +203,6 @@ class PodcastDetailsPage extends StatelessWidget {
                                     builder: (context) => FullScreenPlayer(
                                       podcast: podcast,
                                       episode: episode,
-                                      nextEpisode: nextEpisode,
                                     ),
                                   ),
                                 );

@@ -1,19 +1,23 @@
 import '../../../../core/enums/image_size_enums.dart';
 
-class Podcast {
+class Episode {
   final String id;
   final String name;
-  final String publisher;
   final String? description;
+  final int duration;
+  final String? releaseDate;
+  final String audioUrl;
   final String? smallImageUrl;
   final String? mediumImageUrl;
   final String? largeImageUrl;
 
-  Podcast({
+  Episode({
     required this.id,
     required this.name,
-    required this.publisher,
     this.description,
+    required this.duration,
+    this.releaseDate,
+    required this.audioUrl,
     this.smallImageUrl,
     this.mediumImageUrl,
     this.largeImageUrl,

@@ -13,7 +13,7 @@ class RemoteEpisodeSource {
     return await _tokenService.getAccessToken();
   }
 
-  Future<List<Episode>> fetchEpisodes(
+  Future<List<EpisodeModel>> fetchEpisodes(
     String showId, {
     required int offset,
     required int limit,
@@ -46,7 +46,7 @@ class RemoteEpisodeSource {
             .where((item) => item != null) // Remove null items
             .map((item) {
               try {
-                return Episode.fromJson(item as Map<String, dynamic>);
+                return EpisodeModel.fromJson(item as Map<String, dynamic>);
               } catch (e) {
                 debugPrint('Error parsing episode: $e');
                 debugPrint('Problem episode data: $item');
@@ -54,7 +54,7 @@ class RemoteEpisodeSource {
               }
             })
             .where((episode) => episode != null)
-            .cast<Episode>()
+            .cast<EpisodeModel>()
             .toList();
       } else {
         throw Exception(

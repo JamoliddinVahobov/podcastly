@@ -1,4 +1,4 @@
-import 'package:podcast_app/features/episode_details/data/models/episode_model.dart';
+import 'package:podcast_app/features/episode_details/domain/entities/episode_entity.dart';
 import 'package:podcast_app/features/episode_details/domain/repositories/episode_repository.dart';
 
 class FetchEpisodesUsecase {

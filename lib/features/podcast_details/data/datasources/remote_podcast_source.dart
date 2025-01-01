@@ -12,7 +12,7 @@ class RemotePodcastSource {
     return await _tokenService.getAccessToken();
   }
 
-  Future<List<Podcast>> fetchPodcasts({
+  Future<List<PodcastModel>> fetchPodcasts({
     required int offset,
     required int limit,
   }) async {
@@ -38,7 +38,7 @@ class RemotePodcastSource {
 
       if (response.statusCode == 200) {
         final List<dynamic> items = response.data['shows']['items'];
-        return items.map((item) => Podcast.fromJson(item)).toList();
+        return items.map((item) => PodcastModel.fromJson(item)).toList();
       } else {
         throw Exception('Failed to load podcasts: ${response.data}');
       }

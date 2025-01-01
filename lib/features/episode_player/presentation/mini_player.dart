@@ -1,10 +1,10 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/features/episode_details/data/models/episode_model.dart';
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
 import 'package:podcast_app/features/episode_player/presentation/fullscreen_player.dart';
+import 'package:podcast_app/features/podcast_details/domain/entities/podcast_entity.dart';
 import '../../../core/enums/image_size_enums.dart';
+import '../../episode_details/domain/entities/episode_entity.dart';
 import '../logic/audio_player_bloc/audio_player_bloc.dart';
 
 class MiniPlayer extends StatelessWidget {

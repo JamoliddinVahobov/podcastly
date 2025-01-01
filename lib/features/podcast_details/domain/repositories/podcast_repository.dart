@@ -1,4 +1,4 @@
-import '../../data/models/podcast_model.dart';
+import '../entities/podcast_entity.dart';
 
 abstract class PodcastRepository {
   Future<List<Podcast>> fetchPodcasts(

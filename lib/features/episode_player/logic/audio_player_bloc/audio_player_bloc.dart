@@ -3,8 +3,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
-import 'package:podcast_app/features/episode_details/data/models/episode_model.dart';
+import 'package:podcast_app/features/podcast_details/domain/entities/podcast_entity.dart';
+
+import '../../../episode_details/domain/entities/episode_entity.dart';
 part 'audio_player_event.dart';
 part 'audio_player_state.dart';
 

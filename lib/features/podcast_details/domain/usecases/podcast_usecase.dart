@@ -1,5 +1,5 @@
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
 import 'package:podcast_app/features/podcast_details/domain/repositories/podcast_repository.dart';
+import '../entities/podcast_entity.dart';
 
 class FetchPodcastsUsecase {
   final PodcastRepository podcastRepository;
@@ -10,8 +10,8 @@ class FetchPodcastsUsecase {
     required int limit,
   }) async {
     return await podcastRepository.fetchPodcasts(
-      limit: limit,
       offset: offset,
+      limit: limit,
     );
   }
 }

@@ -1,20 +1,18 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:podcast_app/features/episode_details/data/models/episode_model.dart';
-import 'package:podcast_app/features/podcast_details/data/models/podcast_model.dart';
 import '../../../core/enums/image_size_enums.dart';
 import '../../../core/helpers/helpers.dart';
+import '../../episode_details/domain/entities/episode_entity.dart';
+import '../../podcast_details/domain/entities/podcast_entity.dart';
 import '../logic/audio_player_bloc/audio_player_bloc.dart';
 
 class FullScreenPlayer extends StatelessWidget {
   final Episode episode;
   final Podcast podcast;
-  final Episode? nextEpisode;
 
   const FullScreenPlayer({
     super.key,
-    this.nextEpisode,
     required this.episode,
     required this.podcast,
   });
@@ -187,17 +185,6 @@ class FullScreenPlayer extends StatelessWidget {
             context.read<AudioPlayerBloc>().add(
                   SeekEpisode(position: newPosition),
                 );
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.skip_next),
-          iconSize: 32,
-          onPressed: () {
-            context.read<AudioPlayerBloc>().add(SkipToNextEpisode(
-                  audioUrl: nextEpisode!.audioUrl,
-                  podcast: podcast,
-                  episode: nextEpisode!,
-                ));
           },
         ),
       ],

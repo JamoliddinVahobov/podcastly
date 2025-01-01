@@ -5,8 +5,8 @@ import 'package:podcast_app/core/enums/image_size_enums.dart';
 import 'package:podcast_app/features/podcast_details/domain/usecases/podcast_usecase.dart';
 import '../../../auth/logic/auth_bloc.dart';
 import '../../../auth/logic/auth_state.dart';
+import '../../domain/entities/podcast_entity.dart';
 import '../providers/podcast_provider_cubit/podcast_provider_cubit.dart';
-import '../../data/models/podcast_model.dart';
 import 'podcast_details_page.dart';
 
 class HomePage extends StatelessWidget {

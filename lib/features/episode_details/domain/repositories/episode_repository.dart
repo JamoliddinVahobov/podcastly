@@ -1,4 +1,4 @@
-import '../../data/models/episode_model.dart';
+import 'package:podcast_app/features/episode_details/domain/entities/episode_entity.dart';
 
 abstract class EpisodeRepository {
   Future<List<Episode>> fetchEpisodes(String showId,

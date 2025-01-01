@@ -1,5 +1,6 @@
-import '../models/podcast_model.dart';
+import '../../domain/entities/podcast_entity.dart';
 import '../datasources/remote_podcast_source.dart';
+
 import '../../domain/repositories/podcast_repository.dart';
 
 class PodcastRepositoryImpl implements PodcastRepository {
@@ -14,9 +15,10 @@ class PodcastRepositoryImpl implements PodcastRepository {
     required int offset,
     required int limit,
   }) async {
-    return await _remotePodcastSource.fetchPodcasts(
+    final models = await _remotePodcastSource.fetchPodcasts(
       offset: offset,
       limit: limit,
     );
+    return models.map((model) => model.toEntity()).toList();
   }
 }
