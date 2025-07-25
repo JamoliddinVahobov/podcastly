@@ -1,26 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import '../models/podcast_model.dart';
-import '../../../../core/services/token_management_service.dart';
+import 'package:podcast_app/core/dependency_injection/dependency_injection.dart';
+import '../../../../../core/helpers/helpers.dart';
+import '../../models/podcast_model.dart';
+import 'remote_podcast_source.dart';
 
-class RemotePodcastSource {
-  final TokenManagementService _tokenService;
+class RemotePodcastSourceImpl implements RemotePodcastSource {
+  final _dio = getIt<Dio>();
 
-  RemotePodcastSource(this._tokenService);
-
-  Future<String> _getAccessToken() async {
-    return await _tokenService.getAccessToken();
-  }
-
+  @override
   Future<List<PodcastModel>> fetchPodcasts({
     required int offset,
     required int limit,
   }) async {
     try {
-      String accessToken = await _getAccessToken();
+      String accessToken = await Helpers.getAccessToken();
       debugPrint('access token: $accessToken');
 
-      final response = await Dio().get(
+      final response = await _dio.get(
         'https://api.spotify.com/v1/search',
         queryParameters: {
           'q': 'podcast',

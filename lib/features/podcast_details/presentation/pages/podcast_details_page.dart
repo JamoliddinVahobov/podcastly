@@ -121,7 +121,10 @@ class PodcastDetailsPage extends StatelessWidget {
                         const SizedBox(height: 20),
                         Text(
                           'Episodes',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),

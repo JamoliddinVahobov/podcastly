@@ -1,26 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/services/token_management_service.dart';
-import '../models/episode_model.dart';
+import 'package:podcast_app/core/dependency_injection/dependency_injection.dart';
+import '../../../../../core/helpers/helpers.dart';
+import '../../models/episode_model.dart';
+import 'remote_episode_source.dart';
 
-class RemoteEpisodeSource {
-  final TokenManagementService _tokenService;
+class RemoteEpisodeSourceImpl implements RemoteEpisodeSource {
+  final _dio = getIt<Dio>();
 
-  RemoteEpisodeSource(this._tokenService);
-
-  Future<String> _getAccessToken() async {
-    return await _tokenService.getAccessToken();
-  }
-
+  @override
   Future<List<EpisodeModel>> fetchEpisodes(
     String showId, {
     required int offset,
     required int limit,
   }) async {
     try {
-      String accessToken = await _getAccessToken();
+      String accessToken = await Helpers.getAccessToken();
 
-      final response = await Dio().get(
+      final response = await _dio.get(
         'https://api.spotify.com/v1/shows/$showId/episodes',
         queryParameters: {
           'market': 'US',
@@ -40,7 +37,7 @@ class RemoteEpisodeSource {
       if (response.statusCode == 200) {
         final List<dynamic> items = response.data['items'] as List<dynamic>;
 
-        // Filter out null items and map valid ones to Episode objects
+        // Filters out null items and maps valid ones to Episode objects
         return items
             .where((item) => item != null) // Remove null items
             .map((item) {

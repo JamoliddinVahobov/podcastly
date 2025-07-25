@@ -1,7 +1,6 @@
 import '../../domain/entities/podcast_entity.dart';
-import '../datasources/remote_podcast_source.dart';
-
 import '../../domain/repositories/podcast_repository.dart';
+import '../datasources/remote/remote_podcast_source.dart';
 
 class PodcastRepositoryImpl implements PodcastRepository {
   final RemotePodcastSource _remotePodcastSource;

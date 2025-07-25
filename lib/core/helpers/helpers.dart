@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../services/token_management_service.dart';
+
 class Helpers {
+  static final tokenService = TokenManagementService();
+
+  static Future<String> getAccessToken() async {
+    return await tokenService.getAccessToken();
+  }
+
   static void showSnackbar(String message, BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
